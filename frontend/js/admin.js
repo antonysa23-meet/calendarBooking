@@ -62,7 +62,7 @@
     }
 
     if (!snapshot.resolved) {
-      els.gate.innerHTML = UI.skeletons(1);
+      els.gate.innerHTML = UI.inlineLoader('Checking your instructor access…');
       els.panel.hidden = true;
       return false;
     }
@@ -97,6 +97,12 @@
     optionsLoaded = true;
     signedInEmail = snapshot.email || '';
 
+    // These two selects are empty until the fetch lands. Left blank they read
+    // as "this form is broken"; a disabled placeholder reads as "nearly there".
+    const pending = '<option value="" disabled selected>Loading…</option>';
+    els.course.innerHTML = pending;
+    els.sessionType.innerHTML = pending;
+
     try {
       const data = await Api.listCourses();
       els.course.innerHTML = (data.courses || [])
@@ -108,6 +114,8 @@
           .map((t) => `<option value="${UI.esc(t)}">${UI.esc(t)}</option>`)
           .join('');
     } catch (e) {
+      els.course.innerHTML = '';
+      els.sessionType.innerHTML = '<option value="">(none)</option>';
       UI.toast('Could not load the course list: ' + (e.message || e), 'error', 8000);
     }
 
@@ -485,7 +493,7 @@
           `${result.count} sessions published and open for booking.`, 'success', 8000);
         return `Published ${result.count} sessions`;
       },
-      `Publishing ${slots.length}…`
+      `Publishing (This may take some time) ${slots.length}…`
     );
   }
 
@@ -521,7 +529,7 @@
   /* ---- Events table ---------------------------------------------------- */
 
   async function loadEvents({ quiet = false } = {}) {
-    if (!quiet) els.events.innerHTML = UI.skeletons(2);
+    if (!quiet) els.events.innerHTML = UI.skeletons(2, 'Loading your sessions…');
     const includePast = els.showPast.checked;
 
     try {

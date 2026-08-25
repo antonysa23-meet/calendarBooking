@@ -7,7 +7,7 @@
   const target = document.querySelector('#upcoming');
 
   async function loadUpcoming() {
-    target.innerHTML = UI.skeletons(MAX_PREVIEW);
+    target.innerHTML = UI.skeletons(MAX_PREVIEW, 'Loading upcoming sessions…');
 
     try {
       const data = await Api.listEvents({});

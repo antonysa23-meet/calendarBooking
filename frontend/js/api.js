@@ -12,6 +12,10 @@
    2. Apps Script cannot return HTTP status codes, so every response is 200 and
       carries an envelope: {success, data|error, message}. Never branch on
       res.ok - branch on the envelope.
+
+   Every request also runs through UI.progress, which puts the top-of-page
+   loading bar under one counter. Driving it from here rather than from each
+   caller means a request cannot be added later that silently shows nothing.
    ========================================================================== */
 
 /** Error carrying the backend's machine-readable code (see ERR in Constants.js). */
@@ -66,6 +70,21 @@ const Api = (function () {
     return envelope.data;
   }
 
+  /**
+   * Run one request with the shared loading bar held up for its duration.
+   * UI is loaded before this file on every page, but the guard keeps api.js
+   * usable on its own (the test harness loads it without the DOM helpers).
+   */
+  async function withProgress(fn) {
+    const bar = window.UI && window.UI.progress;
+    if (bar) bar.start();
+    try {
+      return await fn();
+    } finally {
+      if (bar) bar.done();
+    }
+  }
+
   function networkError(e) {
     if (e instanceof ApiError) return e;
     return new ApiError(
@@ -85,11 +104,13 @@ const Api = (function () {
     });
 
     try {
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        redirect: 'follow'
+      return await withProgress(async () => {
+        const response = await fetch(url.toString(), {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        return await unwrap(response);
       });
-      return await unwrap(response);
     } catch (e) {
       throw networkError(e);
     }
@@ -100,14 +121,16 @@ const Api = (function () {
     const body = JSON.stringify(Object.assign({ action }, payload || {}));
 
     try {
-      const response = await fetch(baseUrl(), {
-        method: 'POST',
-        // Deliberately text/plain - see the note at the top of this file.
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body,
-        redirect: 'follow'
+      return await withProgress(async () => {
+        const response = await fetch(baseUrl(), {
+          method: 'POST',
+          // Deliberately text/plain - see the note at the top of this file.
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body,
+          redirect: 'follow'
+        });
+        return await unwrap(response);
       });
-      return await unwrap(response);
     } catch (e) {
       throw networkError(e);
     }

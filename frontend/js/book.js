@@ -21,6 +21,13 @@
   /* ---- Data ------------------------------------------------------------ */
 
   async function loadCourses() {
+    // Say the list is on its way rather than letting the dropdown sit there
+    // looking as though "All courses" is the only choice there will ever be.
+    const pending = document.createElement('option');
+    pending.disabled = true;
+    pending.textContent = 'Loading courses…';
+    els.course.appendChild(pending);
+
     try {
       const data = await Api.listCourses();
       (data.courses || []).forEach((course) => {
@@ -32,6 +39,8 @@
     } catch (e) {
       // A missing course filter is survivable; the list itself still loads.
       console.warn('Could not load courses:', e);
+    } finally {
+      pending.remove();
     }
   }
 
@@ -50,7 +59,13 @@
   async function loadEvents({ quiet = false } = {}) {
     if (loading) return;
     loading = true;
-    if (!quiet) els.events.innerHTML = UI.skeletons(6);
+    if (!quiet) {
+      els.events.innerHTML = UI.skeletons(6, 'Loading sessions…');
+      els.count.textContent = 'Loading…';
+    }
+    // Even on a quiet reload the button reports itself, so a second click on
+    // Refresh does not look like the first one was dropped.
+    UI.setBusy(els.refresh, true);
 
     try {
       const [data] = await Promise.all([Api.listEvents({}), loadMyBookings()]);
@@ -62,6 +77,7 @@
       els.count.textContent = '';
     } finally {
       loading = false;
+      UI.setBusy(els.refresh, false);
     }
   }
 

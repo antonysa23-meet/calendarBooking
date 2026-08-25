@@ -163,6 +163,93 @@ const UI = (function () {
     return el;
   }
 
+  /* ---- Global activity indicator -------------------------------------- */
+
+  /**
+   * One thin bar across the top of the viewport that runs whenever a request
+   * is in flight. api.js drives it, so the calls with no visible home of their
+   * own - the "quiet" reload after a booking, the whoAmI on page load, the
+   * course list behind a filter - still tell the user the page is working.
+   *
+   * Two details keep it from becoming noise:
+   *
+   *   - it waits SHOW_DELAY_MS before appearing, so the many requests that
+   *     come back quickly never flash a bar;
+   *   - it counts concurrent requests, so the first one to land cannot hide
+   *     the bar while its siblings are still out.
+   */
+  const progress = (function () {
+    const SHOW_DELAY_MS = 180;
+    const MIN_VISIBLE_MS = 400;   // once it is up, it stays long enough to read
+
+    let inFlight = 0;
+    let bar = null;
+    let showTimer = null;
+    let hideTimer = null;
+    let shownAt = 0;
+
+    function element() {
+      if (!bar && document.body) {
+        bar = document.createElement('div');
+        bar.className = 'load-bar';
+        // Decoration only: skeletons and busy buttons carry the wording that
+        // screen readers announce, and a second live region would double up.
+        bar.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(bar);
+      }
+      return bar;
+    }
+
+    function show() {
+      const el = element();
+      if (!el) return;
+      clearTimeout(hideTimer);
+      el.classList.add('is-active');
+      shownAt = Date.now();
+    }
+
+    function hide() {
+      if (bar) bar.classList.remove('is-active');
+    }
+
+    /** Call once per request as it goes out. */
+    function start() {
+      inFlight += 1;
+      if (inFlight === 1 && !showTimer) {
+        showTimer = setTimeout(() => {
+          showTimer = null;
+          if (inFlight > 0) show();
+        }, SHOW_DELAY_MS);
+      }
+    }
+
+    /** Call once per request as it settles, success or failure. */
+    function done() {
+      inFlight = Math.max(0, inFlight - 1);
+      if (inFlight > 0) return;
+
+      clearTimeout(showTimer);
+      showTimer = null;
+      if (!bar || !bar.classList.contains('is-active')) return;
+
+      // Hiding the instant the last response lands reads as a glitch; let the
+      // bar finish the sweep it started.
+      hideTimer = setTimeout(hide, Math.max(0, MIN_VISIBLE_MS - (Date.now() - shownAt)));
+    }
+
+    /** Put non-Api work (a slow render, an image) on the same bar. */
+    async function track(promise) {
+      start();
+      try {
+        return await promise;
+      } finally {
+        done();
+      }
+    }
+
+    return { start, done, track };
+  })();
+
   /* ---- Buttons -------------------------------------------------------- */
 
   /** Disable + spinner while an async action runs, restoring the label after. */
@@ -275,8 +362,27 @@ const UI = (function () {
     </div>`;
   }
 
-  function skeletons(count = 3) {
-    return `<div class="skeleton-grid">${'<div class="skeleton-card"></div>'.repeat(count)}</div>`;
+  /**
+   * Placeholder cards for a list that is still being fetched. The wrapper is
+   * the live region, so assistive tech hears "Loading sessions..." once and
+   * then the real content when it replaces this markup.
+   */
+  function skeletons(count = 3, label = 'Loading…') {
+    return `<div class="skeleton-grid" role="status" aria-live="polite" aria-busy="true">
+      <span class="sr-only">${esc(label)}</span>
+      ${'<div class="skeleton-card" aria-hidden="true"></div>'.repeat(count)}
+    </div>`;
+  }
+
+  /**
+   * A spinner with a caption, for the places a skeleton card would not fit:
+   * inside a modal, under a form, in a table cell.
+   */
+  function inlineLoader(message = 'Loading…') {
+    return `<div class="inline-loader" role="status" aria-live="polite">
+      <span class="inline-loader-spinner" aria-hidden="true"></span>
+      <span>${esc(message)}</span>
+    </div>`;
   }
 
   function errorPanel(error) {
@@ -407,8 +513,8 @@ const UI = (function () {
   return {
     esc, icon,
     fmtDate, fmtTime, fmtRange, relativeDay, localInputToIso,
-    toast, setBusy, modal, confirmDialog,
-    emptyState, skeletons, errorPanel, seatBadge, sessionCard,
+    toast, progress, setBusy, modal, confirmDialog,
+    emptyState, skeletons, inlineLoader, errorPanel, seatBadge, sessionCard,
     initChrome
   };
 })();

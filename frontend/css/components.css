@@ -528,6 +528,92 @@ table.data .row-cancelled { opacity: 0.6; }
   to   { background-position: -20% 0; }
 }
 
+/* Global loading bar ------------------------------------------------------ */
+
+/* The bar lies exactly over the header's 3px OEDK gold hairline, so a page
+   with nothing in flight looks untouched and the bar costs no layout space.
+   That is also why the sweep is navy rather than amber: an amber segment on
+   an amber rule is invisible, and "loading" has to be legible at a glance. */
+
+/* Sits above the sticky header (50), the modal (150) and the toasts (200), so
+   a request fired from inside a dialog still reports itself. */
+.load-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 300;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+.load-bar.is-active { opacity: 1; }
+
+/* Apps Script gives no progress events, so the bar cannot be determinate.
+   A sweeping segment says "still working" without implying a percentage. */
+.load-bar::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 40%;
+  border-radius: var(--radius-pill);
+  /* Transparent ends let the gold rule show through, so the segment reads as
+     something travelling along the hairline rather than covering it. */
+  background: linear-gradient(90deg,
+    rgba(0, 32, 91, 0) 0%,
+    var(--rice-blue-500) 35%,
+    var(--rice-blue) 50%,
+    var(--rice-blue-500) 65%,
+    rgba(0, 32, 91, 0) 100%);
+  animation: load-sweep 1.15s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes load-sweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(350%); }
+}
+
+/* Reduced motion turns every animation into a single 0.01ms tick, which would
+   leave the segment parked off-screen. Show a still, full-width bar instead. */
+@media (prefers-reduced-motion: reduce) {
+  .load-bar::after {
+    width: 100%;
+    transform: none;
+    background: var(--rice-blue);
+  }
+}
+
+/* Inline loader ----------------------------------------------------------- */
+
+.inline-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.inline-loader-spinner {
+  flex-shrink: 0;
+  width: 1.15em;
+  height: 1.15em;
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--rice-blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Same reasoning as the bar: with animation suppressed a bare ring reads as a
+   broken widget, so give it a full ring and let the caption do the talking. */
+@media (prefers-reduced-motion: reduce) {
+  .inline-loader-spinner { border-top-color: var(--color-border-strong); }
+}
+
 /* --------------------------------------------------------------------------
    Auth chip / sign-in
    -------------------------------------------------------------------------- */

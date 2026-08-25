@@ -14,7 +14,7 @@
       return;
     }
 
-    content.innerHTML = UI.skeletons(2);
+    content.innerHTML = UI.skeletons(2, 'Loading your bookings…');
 
     try {
       data = await Api.listMyBookings({ includeCancelled: true });
