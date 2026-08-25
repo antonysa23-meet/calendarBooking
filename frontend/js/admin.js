@@ -634,7 +634,39 @@
   /* ---- Roster ---------------------------------------------------------- */
 
   async function showRoster(eventId, button) {
-    UI.setBusy(button, true, '…');
+    UI.setBusy(button, true, '\u2026');
+
+    // Open the shell on the click, not on the far side of the round-trip. The
+    // roster walks the Bookings sheet - the slowest read on this page - and a
+    // dialog that only materialises once it lands reads as a dead button.
+    // Everything except the seat count is already in hand from the list.
+    const known = events.find((ev) => ev.eventId === eventId);
+    const handle = UI.modal({
+      title: (known && known.title) || 'Roster',
+      subtitle: known ? UI.fmtRange(known.startDateTime, known.endDateTime) : 'Loading\u2026',
+      body: UI.inlineLoader('Loading the roster\u2026'),
+      footer: '<button class="btn btn-secondary" type="button" data-close>Close</button>',
+      onMount(root, close) {
+        root.querySelector('[data-close]').addEventListener('click', close);
+      }
+    });
+
+    /**
+     * Swap the placeholder for the real contents, unless the teacher has
+     * already closed the dialog. Returns the modal element, or null if it is
+     * gone - callers use that to stop touching a detached tree.
+     */
+    function fill(bodyHtml, footHtml) {
+      if (!document.body.contains(handle.root)) return null;
+      const modalEl = handle.root.querySelector('.modal');
+      modalEl.querySelector('.modal-body').innerHTML = bodyHtml;
+
+      const foot = modalEl.querySelector('.modal-foot');
+      foot.innerHTML = footHtml;
+      // The old Close listener died with the markup it was bound to.
+      foot.querySelector('[data-close]').addEventListener('click', handle.close);
+      return modalEl;
+    }
 
     try {
       const data = await Api.getRoster(eventId);
@@ -656,34 +688,37 @@
            </div>`
         : UI.emptyState('No bookings yet', 'Nobody has taken a seat in this session so far.');
 
-      UI.modal({
-        title: data.event.title,
-        subtitle: `${UI.fmtRange(data.event.startDateTime, data.event.endDateTime)} · ` +
-                  `${roster.length} of ${data.event.capacity} seats taken`,
-        body,
-        footer: roster.length
-          ? `<button class="btn btn-secondary" type="button" data-copy>Copy email addresses</button>
-             <button class="btn" type="button" data-close>Close</button>`
-          : '<button class="btn" type="button" data-close>Close</button>',
-        onMount(root, close) {
-          const closeBtn = root.querySelector('[data-close]');
-          if (closeBtn) closeBtn.addEventListener('click', close);
+      const modalEl = fill(body, roster.length
+        ? `<button class="btn btn-secondary" type="button" data-copy>Copy email addresses</button>
+           <button class="btn" type="button" data-close>Close</button>`
+        : '<button class="btn" type="button" data-close>Close</button>');
+      if (!modalEl) return;
 
-          const copyBtn = root.querySelector('[data-copy]');
-          if (copyBtn) {
-            copyBtn.addEventListener('click', async () => {
-              try {
-                await navigator.clipboard.writeText(emails);
-                UI.toast(`Copied ${roster.length} email address${roster.length === 1 ? '' : 'es'}.`, 'success', 4000);
-              } catch (e) {
-                UI.toast('Could not copy automatically - select the addresses manually.', 'warning');
-              }
-            });
+      // The heading only firms up now: the seat count arrives with the roster,
+      // and the server's copy of the event is fresher than the cached list.
+      modalEl.setAttribute('aria-label', data.event.title);
+      modalEl.querySelector('.modal-head h3').textContent = data.event.title;
+      modalEl.querySelector('.modal-sub').textContent =
+        `${UI.fmtRange(data.event.startDateTime, data.event.endDateTime)} \u00b7 ` +
+        `${roster.length} of ${data.event.capacity} seats taken`;
+
+      const copyBtn = modalEl.querySelector('[data-copy]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(emails);
+            UI.toast(`Copied ${roster.length} email address${roster.length === 1 ? '' : 'es'}.`, 'success', 4000);
+          } catch (e) {
+            UI.toast('Could not copy automatically - select the addresses manually.', 'warning');
           }
-        }
-      });
+        });
+      }
     } catch (e) {
-      UI.toast((e && e.message) || 'Could not load that roster.', 'error', 8000);
+      // The dialog is already open, so report inside it rather than firing a
+      // toast past a modal the teacher is still looking at.
+      if (!fill(UI.errorPanel(e), '<button class="btn" type="button" data-close>Close</button>')) {
+        UI.toast((e && e.message) || 'Could not load that roster.', 'error', 8000);
+      }
     } finally {
       UI.setBusy(button, false);
     }
@@ -857,6 +892,11 @@
       }
     });
 
+    // Auth.init() stays silent until Google Identity Services has loaded and
+    // whoAmI has been round-tripped through the Sheet - easily a second or
+    // two, and up to ten if GIS is slow. showGate only runs on the far side of
+    // that, so without this the panel is a blank page for the whole wait.
+    els.gate.innerHTML = UI.inlineLoader('Checking your instructor access…');
     Auth.init();
   });
 })();

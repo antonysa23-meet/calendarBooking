@@ -182,6 +182,9 @@
       }
     });
 
+    // load() runs on the first auth callback, which is behind the same GIS +
+    // whoAmI wait the admin panel has. Fill the space until then.
+    content.innerHTML = UI.inlineLoader('Checking your sign-in…');
     Auth.init();
   });
 })();
