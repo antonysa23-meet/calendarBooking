@@ -305,7 +305,15 @@ function showConfig() {
   var calId = getProp_(PROP_KEYS.CALENDAR_ID);
   var clientId = getProp_(PROP_KEYS.OAUTH_CLIENT_ID);
 
-  lines.push('Running as:      ' + Session.getEffectiveUser().getEmail());
+  // Session.getEffectiveUser() needs the userinfo.email scope, which this
+  // project deliberately does not request - identity always comes from the
+  // verified ID token, never from a session API. Purely a diagnostic, so it
+  // degrades rather than taking a scope for one printed line.
+  var runningAs = '(not available - userinfo.email scope not requested)';
+  try {
+    runningAs = Session.getEffectiveUser().getEmail() || runningAs;
+  } catch (e) { /* scope not granted; nothing here depends on it */ }
+  lines.push('Running as:      ' + runningAs);
   lines.push('Script timezone: ' + scriptTimeZone_());
   lines.push('SPREADSHEET_ID:  ' + (ssId || 'NOT SET  <- run oneTimeSetup()'));
   lines.push('CALENDAR_ID:     ' + (calId || 'NOT SET  <- run oneTimeSetup()'));
@@ -352,7 +360,14 @@ function showConfig() {
  */
 function selfTest() {
   var log = [];
-  var me = normalizeEmail_(Session.getEffectiveUser().getEmail());
+  // Attribute the test session to the first active teacher rather than asking
+  // for the userinfo.email scope just to name the running account.
+  var firstTeacher = findRecord_(SHEET_NAMES.TEACHERS, function (row) {
+    return asBool_(row.active);
+  });
+  var me = firstTeacher
+    ? normalizeEmail_(firstTeacher.email)
+    : 'selftest@' + ALLOWED_EMAIL_DOMAIN;
   var start = new Date(Date.now() + 60 * 60 * 1000);
   var end = new Date(Date.now() + 90 * 60 * 1000);
   var calendarEventId = null;
