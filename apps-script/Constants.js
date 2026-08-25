@@ -56,13 +56,23 @@ var CALENDAR_NAME = 'EDES 210 / BIOE 555 - Lab Sessions';
 
 var DEFAULT_FROM_NAME = 'OEDK Lab Sessions';
 
-/** Offered in the admin create-event form; free text is also accepted. */
+/**
+ * Offered in the admin create-event form's dropdown.
+ *
+ * The server does not validate against this list - it is a convenience, and
+ * any free text a teacher types is accepted. So adding, renaming or reordering
+ * entries here never invalidates sessions that already exist.
+ *
+ * Grouped by process: subtractive/cutting first, then additive, then the rest.
+ */
 var SESSION_TYPES = [
   'Safety Training',
   'Equipment Orientation',
   'Laser Cutting',
+  'Water Jet Cutting',
+  'Plasma Cutting',
+  'CNC Machining',
   '3D Printing',
-  'CNC / Plasma Cutting',
   'Molding and Casting',
   'Electronics',
   'Open Lab',
