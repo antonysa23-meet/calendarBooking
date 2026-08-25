@@ -207,10 +207,33 @@ function oneTimeSetup(existingSpreadsheetId) {
   return out;
 }
 
-/** Store the OAuth 2.0 Web Client ID that ID tokens must be issued for. */
+/**
+ * Guard for the functions below, which all take arguments.
+ *
+ * The editor's Run button always calls with no arguments, so running one of
+ * these directly hands it `undefined`. Without this check setSiteUrl(undefined)
+ * would quietly blank the stored URL and report success. Fail loudly instead,
+ * and point at the thing that is meant to be run.
+ */
+function requireArg_(value, functionName) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    throw new Error(
+      functionName + '() needs an argument, and the Apps Script Run button cannot ' +
+      'pass one - it always calls with no arguments.\n\n' +
+      'Fill in the SETUP_* block at the top of Setup.gs and run configure() instead. ' +
+      'configure() calls this function for you.'
+    );
+  }
+  return String(value).trim();
+}
+
+/**
+ * Store the OAuth 2.0 Web Client ID that ID tokens must be issued for.
+ * Called by configure(); not meant to be run directly from the editor.
+ */
 function setOAuthClientId(clientId) {
-  var value = trimStr_(clientId);
-  if (!value || value.indexOf('.apps.googleusercontent.com') === -1) {
+  var value = requireArg_(clientId, 'setOAuthClientId');
+  if (value.indexOf('.apps.googleusercontent.com') === -1) {
     throw new Error('That does not look like a Web OAuth Client ID. It should end in ' +
                     '.apps.googleusercontent.com');
   }
@@ -221,18 +244,30 @@ function setOAuthClientId(clientId) {
 
 /**
  * Store the public site URL so notification emails can link back to it.
- * Include the trailing slash, e.g. https://edes210andbioe555.github.io/calendarBooking/
+ * Include the trailing slash. Called by configure(); not meant to be run
+ * directly from the editor.
  */
 function setSiteUrl(url) {
-  var value = trimStr_(url);
-  if (value && value.slice(-1) !== '/') value += '/';
+  var value = requireArg_(url, 'setSiteUrl');
+  if (value.slice(-1) !== '/') value += '/';
   setProp_(PROP_KEYS.SITE_URL, value);
   console.log('SITE_URL set to: ' + value);
   return value;
 }
 
-/** Add (or re-activate) an instructor on the allow-list. */
+/** Deliberately clear the site URL, so emails omit the links. */
+function clearSiteUrl() {
+  setProp_(PROP_KEYS.SITE_URL, '');
+  console.log('SITE_URL cleared - notification emails will omit links.');
+  return 'SITE_URL cleared.';
+}
+
+/**
+ * Add (or re-activate) an instructor on the allow-list.
+ * Called by configure(); not meant to be run directly from the editor.
+ */
 function addTeacher(email, name) {
+  requireArg_(email, 'addTeacher');
   var target = normalizeEmail_(email);
   if (!isAllowedDomain_(target)) {
     throw new Error('Teachers must have an @' + ALLOWED_EMAIL_DOMAIN + ' address. Got: ' + target);
