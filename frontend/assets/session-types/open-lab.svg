@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" width="320" height="160" role="img" aria-label="Open lab">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00205B"/>
+      <stop offset="1" stop-color="#152237"/>
+    </linearGradient>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0v20" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <rect width="320" height="160" fill="url(#grid)"/>
+  <g fill="none" stroke="#EAB10B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="76" y="26" width="168" height="62" rx="6"/>
+    <rect x="84" y="104" width="152" height="14" rx="3"/>
+    <path d="M104 118v26M216 118v26"/>
+    <g stroke="#F4F6FA">
+      <rect x="98" y="38" width="14" height="15" rx="3"/><path d="M105 53v22"/>
+      <rect x="146" y="38" width="16" height="38" rx="2"/>
+      <path d="M146 47h6M146 57h6M146 67h6"/>
+      <rect x="186" y="38" width="24" height="10" rx="2"/><path d="M198 48v27"/>
+      <path d="M96 104h128"/></g>
+  </g>
+</svg>

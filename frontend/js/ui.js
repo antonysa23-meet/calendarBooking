@@ -302,6 +302,26 @@ const UI = (function () {
    * @param {Object} event an event DTO from the backend
    * @param {{actionHtml?:string, booked?:boolean}} [opts]
    */
+  /* One illustration per session type. Unknown or blank types fall back to the
+     generic tile, so every card in a grid keeps the same shape. */
+  const SESSION_TYPE_ART = {
+    'Safety Training': 'safety-training',
+    'Equipment Orientation': 'equipment-orientation',
+    'Laser Cutting': 'laser-cutting',
+    'Water Jet Cutting': 'water-jet-cutting',
+    'Plasma Cutting': 'plasma-cutting',
+    'CNC Machining': 'cnc-machining',
+    '3D Printing': '3d-printing',
+    'Molding and Casting': 'molding-and-casting',
+    'Electronics': 'electronics',
+    'Open Lab': 'open-lab',
+    'Other': 'other'
+  };
+
+  function sessionArt(type) {
+    return `assets/session-types/${SESSION_TYPE_ART[type] || 'other'}.svg`;
+  }
+
   function sessionCard(event, opts = {}) {
     const seats = seatBadge(event);
     const pct = event.capacity > 0
@@ -320,6 +340,11 @@ const UI = (function () {
 
     return `
       <article class="${classes.join(' ')}">
+        <div class="session-card-media">
+          <img src="${sessionArt(event.sessionType)}" alt="" aria-hidden="true"
+               loading="lazy" width="320" height="160">
+        </div>
+
         <div class="session-card-head">
           <span class="badge badge-course" data-course="${esc(event.courseId)}">${esc(event.courseId)}</span>
           ${opts.booked ? '<span class="badge badge-booked">You are booked</span>' : ''}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" width="320" height="160" role="img" aria-label="Molding and casting">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00205B"/>
+      <stop offset="1" stop-color="#152237"/>
+    </linearGradient>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0v20" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <rect width="320" height="160" fill="url(#grid)"/>
+  <g fill="none" stroke="#EAB10B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M140 22h40l-6 26h-28z"/>
+    <path d="M158 48h4v20h-4z"/>
+    <path d="M96 72h48v66H96zM176 72h48v66h-48z"/>
+    <path d="M144 138h32"/>
+    <g stroke="#F4F6FA">
+      <path d="M144 92c0-12 8-20 16-20s16 8 16 20v46h-32z"/>
+      <path d="M160 68v6"/></g>
+  </g>
+</svg>

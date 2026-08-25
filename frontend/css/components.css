@@ -167,8 +167,26 @@
   border-radius: var(--radius-lg);
   border-top: 3px solid var(--rice-blue);
   box-shadow: var(--shadow-sm);
+  overflow: hidden;                 /* clips the media band to the card radius */
   transition: box-shadow var(--transition), border-color var(--transition);
 }
+
+/* Session-type illustration. 2:1 matches the artwork's viewBox exactly, so
+   object-fit never actually has to crop. */
+.session-card-media {
+  aspect-ratio: 2 / 1;
+  background: var(--rice-blue);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.session-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.session-card.is-cancelled .session-card-media { filter: grayscale(1); }
 
 .session-card:hover { box-shadow: var(--shadow); }
 

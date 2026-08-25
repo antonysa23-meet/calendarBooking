@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" width="320" height="160" role="img" aria-label="Plasma cutting">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00205B"/>
+      <stop offset="1" stop-color="#152237"/>
+    </linearGradient>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0v20" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <rect width="320" height="160" fill="url(#grid)"/>
+  <g fill="none" stroke="#EAB10B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M108 34l26-14 22 38-26 14z"/>
+    <path d="M130 72l16 28"/>
+    <rect x="84" y="122" width="152" height="14" rx="4"/>
+    <path d="M112 136v10M208 136v10"/>
+    <g stroke="#F4F6FA">
+      <path d="M150 104l-8 14M164 100l2 18M178 104l8 14M138 112l-12 8M190 112l12 8"/>
+      <circle cx="164" cy="112" r="5"/></g>
+  </g>
+</svg>

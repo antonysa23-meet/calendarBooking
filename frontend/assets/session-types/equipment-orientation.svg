@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" width="320" height="160" role="img" aria-label="Equipment orientation">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00205B"/>
+      <stop offset="1" stop-color="#152237"/>
+    </linearGradient>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0v20" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <rect width="320" height="160" fill="url(#grid)"/>
+  <g fill="none" stroke="#EAB10B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="98" y="38" width="82" height="100" rx="8"/>
+    <path d="M128 38V32a8 8 0 0 1 8-8h8a8 8 0 0 1 8 8v6z"/>
+    <circle cx="212" cy="96" r="22"/>
+    <path d="M212 62v-10M212 140v-10M240 96h10M174 96h-6M232 76l7-7M185 116l-7 7M232 116l7 7M185 76l-7-7"/>
+    <g stroke="#F4F6FA">
+      <path d="M114 66l7 7 13-14M114 94l7 7 13-14M114 122l7 7 13-14"/>
+      <circle cx="212" cy="96" r="8"/></g>
+  </g>
+</svg>
