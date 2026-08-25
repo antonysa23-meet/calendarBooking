@@ -29,7 +29,7 @@ window.APP_CONFIG = {
    * fewer thing to keep in sync, at the cost of one extra request before the
    * sign-in button appears.
    */
-  GOOGLE_CLIENT_ID: '',
+  GOOGLE_CLIENT_ID: '648143527214-494u5qjo18hd47dqp9588fi2i9dstjs1.apps.googleusercontent.com',
 
   /**
    * Restricts the Google account chooser to this domain. The server enforces
