@@ -2,7 +2,7 @@
 
 ## Context
 
-A group of Rice University teachers share one Google account (`edes210andbioe555@gmail.com`) that supports two courses - **EDES 210** (Prototyping and Fabrication, taught through Rice's Oshman Engineering Design Kitchen: laser cutting, 3D printing, CNC/plasma cutting, molding & casting, electronics) and **BIOE 555**. Teachers need to run one-off equipment/training sessions (e.g. "Laser Cutter Safety Training," "3D Printer Orientation") that students book into, with a per-session capacity cap. Today this presumably happens ad hoc; the goal is a small booking platform that:
+A group of Rice University teachers share one Google account (`edes210andbioe555@gmail.com`) that supports two courses - **EDES 210** (Prototyping and Fabrication, taught through Rice's Oshman Engineering Design Kitchen: laser cutting, 3D printing, CNC/plasma cutting, molding & casting, electronics) and **BIOE 555** (Prototyping and Fabrication for Medical Devices). Teachers need to run one-off equipment/training sessions (e.g. "Laser Cutter Safety Training," "3D Printer Orientation") that students book into, with a per-session capacity cap. Today this presumably happens ad hoc; the goal is a small booking platform that:
 
 - Lets teachers **create** these sessions with a capacity cap
 - Lets students **browse and book** open seats

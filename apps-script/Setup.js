@@ -179,7 +179,9 @@ function oneTimeSetup(existingSpreadsheetId) {
       courseId: 'EDES210', courseName: 'EDES 210 - Prototyping and Fabrication', active: true
     });
     appendRecord_(SHEET_NAMES.COURSES, {
-      courseId: 'BIOE555', courseName: 'BIOE 555', active: true
+      courseId: 'BIOE555',
+      courseName: 'BIOE 555 - Prototyping and Fabrication for Medical Devices',
+      active: true
     });
     log.push('Seeded Courses with EDES210 and BIOE555.');
   }

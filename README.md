@@ -1,8 +1,9 @@
 # Proto Fab Cal - Lab Session Booking
 
 Booking site for one-off equipment and training sessions in **EDES 210**
-(Prototyping and Fabrication) and **BIOE 555**, run out of Rice University's
-Oshman Engineering Design Kitchen.
+(Prototyping and Fabrication) and **BIOE 555** (Prototyping and Fabrication for
+Medical Devices), run out of Rice University's Oshman Engineering Design
+Kitchen.
 
 Teachers publish a session with a seat cap; students sign in with their
 `@rice.edu` Google account and take a seat. The shared course calendar and the
