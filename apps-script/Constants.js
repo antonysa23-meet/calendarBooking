@@ -23,7 +23,7 @@ var SHEET_NAMES = {
  */
 var SHEET_HEADERS = {
   Events: [
-    'eventId', 'courseId', 'title', 'sessionType', 'description',
+    'eventId', 'seriesId', 'courseId', 'title', 'sessionType', 'description',
     'startDateTime', 'endDateTime', 'location', 'capacity',
     'teacherEmail', 'teacherName', 'calendarEventId', 'status',
     'createdBy', 'createdAt'
@@ -101,3 +101,13 @@ var LOCK_TIMEOUT_MS = 20000;
 
 /** Hard ceiling on capacity, to catch typos like 1000 in the admin form. */
 var MAX_CAPACITY = 500;
+
+/**
+ * Hard ceiling on how many sessions one bulk request may publish.
+ *
+ * Each session costs a CalendarApp.createEvent round-trip (roughly a second),
+ * and the whole request has to finish inside the Apps Script runtime limit. 40
+ * keeps the worst case well under it; a bigger schedule is published in two
+ * passes, which is also easier to sanity-check before hitting publish.
+ */
+var MAX_BULK_SESSIONS = 40;

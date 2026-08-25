@@ -62,13 +62,25 @@
         <div class="section-head">
           <div>
             <h2>Create a session</h2>
-            <p class="section-sub">Publishing creates the calendar event and opens booking immediately.</p>
+            <p class="section-sub">Publishing creates the calendar events and opens booking immediately.</p>
           </div>
         </div>
 
         <div class="card">
           <div class="card-body">
             <form id="create-form" novalidate>
+
+              <div class="mode-toggle" role="radiogroup" aria-label="How many sessions to publish">
+                <label>
+                  <input type="radio" name="mode" value="single" checked>
+                  <span>One session</span>
+                </label>
+                <label>
+                  <input type="radio" name="mode" value="bulk">
+                  <span>Multiple sessions</span>
+                </label>
+              </div>
+
               <div class="form-grid">
 
                 <div class="field">
@@ -88,20 +100,50 @@
                   <p class="hint">Shown on the card and used as the calendar event title.</p>
                 </div>
 
-                <div class="field">
+                <div class="field" data-mode="single">
                   <label for="date">Date <span class="required">*</span></label>
                   <input type="date" id="date" name="date" required>
                 </div>
 
-                <div class="field">
+                <div class="field" data-mode="single">
                   <label for="startTime">Start <span class="required">*</span></label>
                   <input type="time" id="startTime" name="startTime" step="900" required>
                 </div>
 
-                <div class="field">
+                <div class="field" data-mode="single">
                   <label for="endTime">End <span class="required">*</span></label>
                   <input type="time" id="endTime" name="endTime" step="900" required>
                   <p class="hint" id="tz-hint"></p>
+                </div>
+
+                <div class="field span-2" data-mode="bulk" hidden>
+                  <label id="dates-label">Dates <span class="required">*</span></label>
+                  <div id="date-picker" aria-labelledby="dates-label"></div>
+                </div>
+
+                <div class="field" data-mode="bulk" hidden>
+                  <label for="windowStart">Free from <span class="required">*</span></label>
+                  <input type="time" id="windowStart" name="windowStart" step="900" value="17:00">
+                </div>
+
+                <div class="field" data-mode="bulk" hidden>
+                  <label for="windowEnd">Until <span class="required">*</span></label>
+                  <input type="time" id="windowEnd" name="windowEnd" step="900" value="19:00">
+                  <p class="hint" id="tz-hint-bulk"></p>
+                </div>
+
+                <div class="field" data-mode="bulk" hidden>
+                  <label for="slotMinutes">Session length <span class="required">*</span></label>
+                  <input type="number" id="slotMinutes" name="slotMinutes"
+                         min="5" max="480" step="5" value="30">
+                  <p class="hint">Minutes. The window is split into sessions this long.</p>
+                </div>
+
+                <div class="field" data-mode="bulk" hidden>
+                  <label for="gapMinutes">Gap between</label>
+                  <input type="number" id="gapMinutes" name="gapMinutes"
+                         min="0" max="120" step="5" value="0">
+                  <p class="hint">Minutes of breathing room after each session.</p>
                 </div>
 
                 <div class="field">
@@ -129,6 +171,8 @@
                 </div>
 
               </div>
+
+              <div id="preview" data-mode="bulk" hidden aria-live="polite"></div>
 
               <div class="form-actions">
                 <button class="btn" type="submit" id="create-submit">Publish session</button>
@@ -183,6 +227,7 @@
 <script src="js/ui.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/bulk-sessions.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>

@@ -352,6 +352,78 @@ function sendEventCreatedEmail_(event, createdBy) {
   );
 }
 
+/**
+ * One digest for a bulk publish, instead of one mail per session.
+ *
+ * A 30-session batch sent individually would burn a third of the account's
+ * daily recipient allowance on a single click, and arrive as 30 near-identical
+ * messages. The schedule is grouped by day so it stays readable at any size.
+ */
+function sendEventsCreatedEmail_(events, createdBy) {
+  if (!events || !events.length) return;
+  if (events.length === 1) return sendEventCreatedEmail_(events[0], createdBy);
+  if (!hasMailQuota_(1)) return;
+
+  var first = events[0];
+  var site = siteUrl_();
+  var count = events.length;
+
+  var shared = detailsTable_([
+    ['Session', first.title],
+    ['Course', first.courseId],
+    ['Type', first.sessionType],
+    ['Location', first.location],
+    ['Instructor', first.teacherName || first.teacherEmail],
+    ['Capacity', String(first.capacity) + ' seats each']
+  ]);
+
+  var schedule =
+    '<p style="margin:22px 0 8px 0;font-size:13px;color:' + RICE_GRAY + ';' +
+               'font-family:Helvetica,Arial,sans-serif;text-transform:uppercase;' +
+               'letter-spacing:.04em;">Schedule</p>' +
+    detailsTable_(eventsByDayRows_(events));
+
+  sendMailSafe_(
+    first.teacherEmail,
+    count + ' sessions published: ' + first.title,
+    emailShell_({
+      heading: count + ' sessions are live',
+      intro: (normalizeEmail_(createdBy) === normalizeEmail_(first.teacherEmail)
+        ? 'Your ' + count + ' sessions are now published and open for booking.'
+        : escapeHtml_(createdBy) + ' scheduled you to lead the ' + count + ' sessions ' +
+          'below. They are now open for booking.'),
+      detailsTable: shared + schedule,
+      note: 'You have been added as a guest on all ' + count + ' calendar events. Students ' +
+            'book each session separately and appear as additional guests as they do. ' +
+            'To call the whole batch off, use "Cancel batch" on any one of them.',
+      ctaUrl: site ? site + 'admin.html' : '',
+      ctaLabel: site ? 'Manage sessions' : ''
+    })
+  );
+}
+
+/** Collapse a batch into one [day, "time, time, time"] row per calendar day. */
+function eventsByDayRows_(events) {
+  var tz = scriptTimeZone_();
+  var order = [];
+  var byDay = {};
+
+  events.forEach(function (event) {
+    var start = toDate_(event.startDateTime);
+    if (!start) return;
+    var day = Utilities.formatDate(start, tz, 'EEE, MMM d, yyyy');
+    if (!byDay[day]) {
+      byDay[day] = [];
+      order.push(day);
+    }
+    byDay[day].push(Utilities.formatDate(start, tz, 'h:mm a'));
+  });
+
+  return order.map(function (day) {
+    return [day, byDay[day].join(', ')];
+  });
+}
+
 function firstName_(fullName) {
   var s = trimStr_(fullName);
   if (!s) return 'there';

@@ -152,7 +152,9 @@ const Api = (function () {
     listMyBookings: (opts) => postAuthed('listMyBookings', opts),
 
     createEvent: (event) => postAuthed('createEvent', event),
+    createEvents: (batch) => postAuthed('createEvents', batch),
     cancelEvent: (eventId) => postAuthed('cancelEvent', { eventId }),
+    cancelSeries: (seriesId) => postAuthed('cancelSeries', { seriesId }),
     getRoster: (eventId) => postAuthed('getRoster', { eventId }),
     listTeachers: () => postAuthed('listTeachers')
   };

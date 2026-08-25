@@ -71,8 +71,14 @@ function doPost(e) {
       case 'createEvent':
         return jsonOutput_(ok_(createEvent_(body), 'Session published.'));
 
+      case 'createEvents':
+        return jsonOutput_(ok_(createEvents_(body), 'Sessions published.'));
+
       case 'cancelEvent':
         return jsonOutput_(ok_(cancelEvent_(body), 'Session cancelled and everyone notified.'));
+
+      case 'cancelSeries':
+        return jsonOutput_(ok_(cancelSeries_(body), 'Batch cancelled and everyone notified.'));
 
       case 'getRoster':
         return jsonOutput_(ok_(getRoster_(body)));

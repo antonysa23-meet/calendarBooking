@@ -82,16 +82,9 @@ function findRecord_(tabName, predicate) {
   return matches.length ? matches[0] : null;
 }
 
-/**
- * Append one record. Missing columns are written blank; unknown keys are
- * ignored so a caller can pass extra fields harmlessly.
- */
-function appendRecord_(tabName, record) {
-  var sheet = getSheet_(tabName);
-  var headerMap = getHeaderMap_(sheet);
-  var width = sheet.getLastColumn();
+/** Lay a record out against the header map as a plain cell array. */
+function recordToRow_(record, headerMap, width) {
   var row = new Array(width).fill('');
-
   Object.keys(record).forEach(function (key) {
     if (key === '_row') return;
     var idx = headerMap[key];
@@ -99,9 +92,52 @@ function appendRecord_(tabName, record) {
     var v = record[key];
     row[idx] = (v === null || v === undefined) ? '' : v;
   });
+  return row;
+}
 
-  sheet.appendRow(row);
+/**
+ * Append one record. Missing columns are written blank; unknown keys are
+ * ignored so a caller can pass extra fields harmlessly.
+ */
+function appendRecord_(tabName, record) {
+  var sheet = getSheet_(tabName);
+  var headerMap = getHeaderMap_(sheet);
+  sheet.appendRow(recordToRow_(record, headerMap, sheet.getLastColumn()));
   return sheet.getLastRow();
+}
+
+/**
+ * Append many records in a single write.
+ *
+ * appendRow() is one round-trip per row, which is the difference between a
+ * snappy bulk publish and one that runs out of script time. The whole block is
+ * written at once instead, growing the sheet first if it has fewer rows left
+ * than the batch needs.
+ *
+ * @param {string} tabName
+ * @param {Array<Object>} records
+ * @return {Array<number>} the 1-based sheet row each record landed on
+ */
+function appendRecords_(tabName, records) {
+  if (!records || !records.length) return [];
+  if (records.length === 1) return [appendRecord_(tabName, records[0])];
+
+  var sheet = getSheet_(tabName);
+  var headerMap = getHeaderMap_(sheet);
+  var width = sheet.getLastColumn();
+  var first = sheet.getLastRow() + 1;
+  var last = first + records.length - 1;
+
+  // getRange() throws rather than growing the sheet on its own.
+  var maxRows = sheet.getMaxRows ? sheet.getMaxRows() : last;
+  if (last > maxRows) sheet.insertRowsAfter(maxRows, last - maxRows);
+
+  var rows = records.map(function (record) {
+    return recordToRow_(record, headerMap, width);
+  });
+  sheet.getRange(first, 1, rows.length, width).setValues(rows);
+
+  return rows.map(function (_, i) { return first + i; });
 }
 
 /**

@@ -20,6 +20,7 @@ function createMocks(options = {}) {
 
   function makeSheet(name) {
     let data = [];   // array of row arrays
+    let maxRows = options.sheetMaxRows === undefined ? 1000 : options.sheetMaxRows;
 
     const width = () => data.reduce((max, row) => Math.max(max, row.length), 0);
 
@@ -38,6 +39,10 @@ function createMocks(options = {}) {
     }
 
     function range(startRow, startCol, numRows, numCols) {
+      if (startRow + numRows - 1 > maxRows) {
+        throw new Error(
+          `range (${startRow}:${startRow + numRows - 1}) exceeds the sheet's ${maxRows} rows`);
+      }
       return {
         getValues() {
           const out = [];
@@ -81,7 +86,20 @@ function createMocks(options = {}) {
       getRange: range,
       appendRow(row) {
         const target = Math.max(width(), row.length);
-        data[lastRow()] = pad(row, target);
+        const at = lastRow();
+        data[at] = pad(row, target);
+        // appendRow grows the sheet by itself in the real API; only getRange
+        // refuses to address rows that do not exist yet.
+        if (at + 1 > maxRows) maxRows = at + 1;
+        return this;
+      },
+      // A real sheet has a fixed row count and getRange() throws past it, so
+      // appendRecords_ has to grow the sheet first. Model that here or the
+      // growth path never gets exercised.
+      getMaxRows: () => maxRows,
+      insertRowsAfter(afterRow, howMany) {
+        if (afterRow !== maxRows) throw new Error('mock only grows from the end');
+        maxRows += howMany;
         return this;
       },
       deleteRow(rowNumber) { data.splice(rowNumber - 1, 1); },
@@ -152,6 +170,11 @@ function createMocks(options = {}) {
     getId: () => 'cal_mock@group.calendar.google.com',
     createEvent(title, start, end, opts = {}) {
       if (options.calendarCreateFails) throw new Error('calendar refused the event');
+      // Fail the Nth create of the run, so a batch can break half-way.
+      if (options.calendarCreateFailsAfter !== undefined &&
+          eventSeq >= options.calendarCreateFailsAfter) {
+        throw new Error('calendar refused the event');
+      }
       const id = 'calevt_' + (++eventSeq);
       const event = makeEvent(id, Object.assign({ title }, opts));
       calendarEvents.set(id, event);

@@ -223,6 +223,17 @@ With a teacher account and a student account, from the live Pages URL:
 
 ## Day-to-day
 
+### Upgrading an existing installation
+
+Bulk publishing added a `seriesId` column to the `Events` tab. After
+`clasp push`, run **`oneTimeSetup()`** once more from the Apps Script editor: it
+appends any header this build expects but the Sheet does not have yet, and
+leaves every existing row untouched. Sessions published before the upgrade keep
+a blank `seriesId` and behave exactly as they did.
+
+Skipping this is not destructive - batches simply cannot be grouped, so the
+*Cancel batch* button never appears.
+
 ### Updating the backend
 
 `clasp push` uploads the code but **does not** move the live URL to it. The
@@ -282,6 +293,25 @@ never happens.
 
 **Teachers share responsibility.** Any active teacher can view the roster of,
 or cancel, any session - sessions are not locked to whoever created them.
+
+**Bulk publishing is an instructor convenience only.** The admin form can split
+a time window into back-to-back sessions across as many dates as you pick, up to
+`MAX_BULK_SESSIONS` (40) in one go. It changes nothing about how students book:
+each generated session is an ordinary session card, booked one seat at a time,
+with the same individual confirmation emails. There is no student-facing way to
+take a whole batch at once.
+
+A batch is published all-or-nothing. Every slot is validated before the first
+calendar event is created, and if anything fails part-way through, the calendar
+events already created are deleted and no Sheet rows are written - so a failure
+never leaves a half-published batch that would double up when you retry. The
+instructor gets one digest email per batch rather than one per session, which
+matters against the ~100/day recipient cap above.
+
+Sessions from one batch share a `seriesId`, which is what the *Cancel batch*
+button in the admin table acts on. It cancels only the upcoming, still-active
+members - a batch that is half taught keeps its history - and the ordinary
+per-session *Cancel* button is unchanged.
 
 **No waitlist.** Over-capacity bookings are refused with a clear message. Adding
 a waitlist later means one more tab and one more branch in `bookSlot_`.
