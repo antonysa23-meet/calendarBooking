@@ -270,9 +270,16 @@ hr {
    supporting copy set in gold rather than a tint of the background. */
 .hero {
   position: relative;
-  background:
-    radial-gradient(1200px 420px at 18% 0%, rgba(10, 80, 158, 0.55) 0%, transparent 65%),
-    linear-gradient(165deg, var(--rice-blue) 0%, var(--oedk-ink) 100%);
+  /* Shop photo underneath, brand navy veiled over it. The veil alphas are what
+     keep the white/gold type readable - drop them and contrast goes with it. */
+  background-color: var(--rice-blue);
+  background-image:
+    radial-gradient(1200px 420px at 18% 0%, rgba(10, 80, 158, 0.45) 0%, transparent 65%),
+    linear-gradient(165deg, rgba(0, 32, 91, 0.86) 0%, rgba(21, 34, 55, 0.92) 100%),
+    url("../assets/hero-bg.jpg");
+  background-size: auto, auto, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat;
   color: var(--color-text-inverse);
   padding-block: var(--space-8);
   border-bottom: var(--rule-gold);
