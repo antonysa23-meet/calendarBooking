@@ -24,7 +24,7 @@
  * The Web OAuth Client ID students sign in with.
  * Google Cloud Console -> Credentials -> OAuth client ID (Web application).
  */
-var SETUP_OAUTH_CLIENT_ID = '';
+var SETUP_OAUTH_CLIENT_ID = '648143527214-494u5qjo18hd47dqp9588fi2i9dstjs1.apps.googleusercontent.com';
 
 /**
  * Public site URL, used for the links inside notification emails.
@@ -40,8 +40,10 @@ var SETUP_SITE_URL = 'https://antonysa23-meet.github.io/calendarBooking/';
  * spreadsheet directly - the sheet is the authority, and no redeploy is needed.
  */
 var SETUP_TEACHERS = [
-  // ['jane.doe@rice.edu', 'Jane Doe'],
-  // ['john.smith@rice.edu', 'John Smith'],
+  // CHECK THIS LINE - the name below is a guess and appears in the UI and in
+  // every notification email. Correct it before running configure().
+  ['as610@rice.edu', 'Antony Saleh'],
+  // ['colleague@rice.edu', 'Their Name'],
 ];
 
 /**
