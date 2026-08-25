@@ -216,7 +216,7 @@ const BulkSessions = (function () {
             <thead><tr>${DAY_NAMES.map((d) => `<th scope="col">${d}</th>`).join('')}</tr></thead>
             <tbody>${weeks.join('')}</tbody>
           </table>
-          <p class="hint">Click dates to select. Shift-click to take a run of days.</p>
+          <p class="daypicker-hint">Click to select. Shift-click for a run of days.</p>
           <div class="daypicker-chosen">
             ${chosen.length
               ? chosen.map((iso) => `

@@ -73,11 +73,13 @@
               <div class="mode-toggle" role="radiogroup" aria-label="How many sessions to publish">
                 <label>
                   <input type="radio" name="mode" value="single" checked>
-                  <span>One session</span>
+                  <span class="mode-name">One session</span>
+                  <span class="mode-hint">A single slot at a set time</span>
                 </label>
                 <label>
                   <input type="radio" name="mode" value="bulk">
-                  <span>Multiple sessions</span>
+                  <span class="mode-name">Multiple sessions</span>
+                  <span class="mode-hint">Split a window across several days</span>
                 </label>
               </div>
 
@@ -116,36 +118,6 @@
                   <p class="hint" id="tz-hint"></p>
                 </div>
 
-                <div class="field span-2" data-mode="bulk" hidden>
-                  <label id="dates-label">Dates <span class="required">*</span></label>
-                  <div id="date-picker" aria-labelledby="dates-label"></div>
-                </div>
-
-                <div class="field" data-mode="bulk" hidden>
-                  <label for="windowStart">Free from <span class="required">*</span></label>
-                  <input type="time" id="windowStart" name="windowStart" step="900" value="17:00">
-                </div>
-
-                <div class="field" data-mode="bulk" hidden>
-                  <label for="windowEnd">Until <span class="required">*</span></label>
-                  <input type="time" id="windowEnd" name="windowEnd" step="900" value="19:00">
-                  <p class="hint" id="tz-hint-bulk"></p>
-                </div>
-
-                <div class="field" data-mode="bulk" hidden>
-                  <label for="slotMinutes">Session length <span class="required">*</span></label>
-                  <input type="number" id="slotMinutes" name="slotMinutes"
-                         min="5" max="480" step="5" value="30">
-                  <p class="hint">Minutes. The window is split into sessions this long.</p>
-                </div>
-
-                <div class="field" data-mode="bulk" hidden>
-                  <label for="gapMinutes">Gap between</label>
-                  <input type="number" id="gapMinutes" name="gapMinutes"
-                         min="0" max="120" step="5" value="0">
-                  <p class="hint">Minutes of breathing room after each session.</p>
-                </div>
-
                 <div class="field">
                   <label for="capacity">Capacity <span class="required">*</span></label>
                   <input type="number" id="capacity" name="capacity" min="1" max="500" value="8" required>
@@ -172,7 +144,71 @@
 
               </div>
 
-              <div id="preview" data-mode="bulk" hidden aria-live="polite"></div>
+              <!-- The schedule builder. One container so a single hidden
+                   attribute swaps the whole mode, and the calendar gets room
+                   to breathe instead of fighting the shared field grid. -->
+              <div class="builder" data-mode="bulk" hidden>
+
+                <div class="builder-grid">
+                  <section class="builder-panel">
+                    <h3 class="builder-title">
+                      <span class="builder-step" aria-hidden="true">1</span>
+                      Pick the dates
+                      <span class="builder-count" id="date-count" aria-live="polite"></span>
+                    </h3>
+                    <div id="date-picker"></div>
+                  </section>
+
+                  <section class="builder-panel">
+                    <h3 class="builder-title">
+                      <span class="builder-step" aria-hidden="true">2</span>
+                      Set the daily window
+                    </h3>
+
+                    <div class="window-grid">
+                      <div class="field">
+                        <label for="windowStart">Free from <span class="required">*</span></label>
+                        <input type="time" id="windowStart" name="windowStart"
+                               step="900" value="17:00">
+                      </div>
+                      <div class="field">
+                        <label for="windowEnd">Until <span class="required">*</span></label>
+                        <input type="time" id="windowEnd" name="windowEnd"
+                               step="900" value="19:00">
+                      </div>
+                      <div class="field">
+                        <label for="slotMinutes">Each session <span class="required">*</span></label>
+                        <div class="input-suffix">
+                          <input type="number" id="slotMinutes" name="slotMinutes"
+                                 min="5" max="480" step="5" value="30">
+                          <span>min</span>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label for="gapMinutes">Gap between</label>
+                        <div class="input-suffix">
+                          <input type="number" id="gapMinutes" name="gapMinutes"
+                                 min="0" max="120" step="5" value="0">
+                          <span>min</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Drawn by admin.js: the window rendered to scale, so the
+                         effect of a slot length is visible rather than arithmetic. -->
+                    <div id="day-strip" class="day-strip"></div>
+                    <p class="hint" id="tz-hint-bulk"></p>
+                  </section>
+                </div>
+
+                <section class="builder-panel builder-review">
+                  <h3 class="builder-title">
+                    <span class="builder-step" aria-hidden="true">3</span>
+                    Review and publish
+                  </h3>
+                  <div id="preview" aria-live="polite"></div>
+                </section>
+              </div>
 
               <div class="form-actions">
                 <button class="btn" type="submit" id="create-submit">Publish session</button>

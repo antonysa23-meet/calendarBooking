@@ -29,6 +29,8 @@
     tzHint: document.querySelector('#tz-hint'),
     tzHintBulk: document.querySelector('#tz-hint-bulk'),
     datePicker: document.querySelector('#date-picker'),
+    dateCount: document.querySelector('#date-count'),
+    dayStrip: document.querySelector('#day-strip'),
     windowStart: document.querySelector('#windowStart'),
     windowEnd: document.querySelector('#windowEnd'),
     slotMinutes: document.querySelector('#slotMinutes'),
@@ -219,11 +221,16 @@
 
     const teacherEmail = els.teacher.value;
     const now = Date.now();
+    const kept = new Map(plan.slots.map((s) => [s.date + s.startTime, s.selected]));
 
     const slots = draft.slots.map((slot) => {
       const startDateTime = UI.localInputToIso(slot.date, slot.startTime);
       const endDateTime = UI.localInputToIso(slot.date, slot.endTime);
       const past = !startDateTime || new Date(startDateTime).getTime() <= now;
+      // Preserve a tick the user has already made: the preview re-renders on
+      // every keystroke, and silently re-selecting something they unticked
+      // would be a good way to publish a session nobody asked for.
+      const previous = kept.get(slot.date + slot.startTime);
       return {
         ...slot,
         startDateTime,
@@ -232,21 +239,91 @@
         clash: past ? null : findClash(startDateTime, endDateTime, teacherEmail),
         // Slots already in the past are never published; unticking them is not
         // a decision anyone should have to make by hand.
-        selected: !past
+        selected: past ? false : (previous === undefined ? true : previous)
       };
     });
 
     return { slots, problems: [], perDay: draft.perDay, leftoverMinutes: draft.leftoverMinutes };
   }
 
+  /** 1050 -> "5:30 PM", for the strip's scale labels. */
+  function to12h(minutes) {
+    const h24 = Math.floor(minutes / 60);
+    const m = String(minutes % 60).padStart(2, '0');
+    const suffix = h24 >= 12 ? 'PM' : 'AM';
+    const h = h24 % 12 === 0 ? 12 : h24 % 12;
+    return `${h}:${m} ${suffix}`;
+  }
+
+  /**
+   * Draw the daily window to scale: each session, each gap, and the unused tail
+   * as a hatched block. Seeing that a 45-minute session leaves 30 minutes idle
+   * is immediate in a way that reading "leftoverMinutes: 30" is not.
+   */
+  function renderDayStrip() {
+    const startM = BulkSessions.parseTime(els.windowStart.value);
+    const endM = BulkSessions.parseTime(els.windowEnd.value);
+    const slotMinutes = Number(els.slotMinutes.value);
+    const gapMinutes = Number(els.gapMinutes.value) || 0;
+
+    // A fixed date - the strip is about shape, and planSlots is pure wall-clock.
+    const probe = BulkSessions.planSlots({
+      dates: ['2000-01-01'],
+      startTime: els.windowStart.value,
+      endTime: els.windowEnd.value,
+      slotMinutes,
+      gapMinutes
+    });
+
+    if (probe.problems.length || startM === null || endM === null) {
+      els.dayStrip.innerHTML = '';
+      return;
+    }
+
+    const segments = [];
+    for (let i = 0; i < probe.perDay; i++) {
+      segments.push(`<div class="strip-slot" style="flex:${slotMinutes} 0 0">${
+        probe.perDay <= 6 ? slotMinutes + 'm' : ''}</div>`);
+      if (gapMinutes > 0 && i < probe.perDay - 1) {
+        segments.push(`<div class="strip-gap" style="flex:${gapMinutes} 0 0"></div>`);
+      }
+    }
+    if (probe.leftoverMinutes > 0) {
+      segments.push(`<div class="strip-rest" style="flex:${probe.leftoverMinutes} 0 0"
+                          title="Unused - too short for another session">${
+        probe.leftoverMinutes >= 20 ? probe.leftoverMinutes + 'm' : ''}</div>`);
+    }
+
+    els.dayStrip.innerHTML = `
+      <div class="strip-scale">
+        <span>${UI.esc(to12h(startM))}</span>
+        <span>${UI.esc(to12h(endM))}</span>
+      </div>
+      <div class="strip-bar">${segments.join('')}</div>
+      <p class="strip-note">
+        <strong>${probe.perDay} session${probe.perDay === 1 ? '' : 's'}</strong> per day
+        &middot; ${slotMinutes} min each${gapMinutes ? ` &middot; ${gapMinutes} min gap` : ''}${
+          probe.leftoverMinutes > 0
+            ? ` &middot; ${probe.leftoverMinutes} min left over each day`
+            : ''}
+      </p>`;
+  }
+
+  function renderDateCount() {
+    const n = picker ? picker.getSelected().length : 0;
+    els.dateCount.textContent = n ? `${n} date${n === 1 ? '' : 's'}` : '';
+  }
+
   function renderPreview() {
     if (mode !== 'bulk') return;
     plan = buildPlan();
+    renderDayStrip();
+    renderDateCount();
 
     if (plan.problems.length) {
       els.preview.innerHTML = `
-        <div class="bulk-preview is-empty">
-          ${plan.problems.map((p) => `<p class="small muted">${UI.esc(p)}</p>`).join('')}
+        <div class="sched-empty">
+          ${plan.problems.map((p) => `<p>${UI.esc(p)}</p>`).join('')}
         </div>`;
       updateSubmitLabel();
       return;
@@ -258,51 +335,76 @@
       byDate.get(slot.date).push({ slot, index });
     });
 
-    const days = [...byDate.entries()].map(([date, entries]) => `
-      <div class="bulk-day">
-        <div class="bulk-day-label">${UI.esc(BulkSessions.labelDate(date))}</div>
-        <div class="bulk-day-slots">
-          ${entries.map(({ slot, index }) => `
-            <label class="bulk-slot${slot.past ? ' is-past' : ''}${slot.clash ? ' is-clash' : ''}">
-              <input type="checkbox" data-slot="${index}"
-                     ${slot.selected ? 'checked' : ''} ${slot.past ? 'disabled' : ''}>
-              <span>${UI.esc(UI.fmtTime(slot.startDateTime))} – ${UI.esc(UI.fmtTime(slot.endDateTime))}</span>
-              ${slot.past ? '<span class="bulk-flag">past</span>' : ''}
-              ${slot.clash
-                ? `<span class="bulk-flag bulk-flag-warn" title="Overlaps ${UI.esc(slot.clash.title)}">clashes</span>`
-                : ''}
-            </label>`).join('')}
-        </div>
-      </div>`).join('');
+    const days = [...byDate.entries()].map(([date, entries]) => {
+      const live = entries.filter((e) => !e.slot.past);
+      const on = live.filter((e) => e.slot.selected).length;
+      return `
+        <div class="sched-day">
+          <div class="sched-date">
+            ${UI.esc(BulkSessions.labelDate(date))}
+            <small>${on} of ${live.length} chosen</small>
+          </div>
+          <div class="sched-pills">
+            ${entries.map(({ slot, index }) => `
+              <button type="button"
+                      class="pill${slot.selected ? ' is-on' : ''}${slot.past ? ' is-past' : ''}${
+                        slot.clash ? ' is-clash' : ''}"
+                      data-slot="${index}"
+                      aria-pressed="${slot.selected}"
+                      ${slot.past ? 'disabled' : ''}
+                      ${slot.clash ? `title="Overlaps &quot;${UI.esc(slot.clash.title)}&quot;"` : ''}>
+                ${slot.clash ? '<span class="pill-dot" aria-hidden="true"></span>' : ''}
+                ${UI.esc(UI.fmtTime(slot.startDateTime))} – ${UI.esc(UI.fmtTime(slot.endDateTime))}
+              </button>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
 
-    const notes = [];
-    notes.push(`${plan.perDay} per day across ${byDate.size} date${byDate.size === 1 ? '' : 's'}`);
-    if (plan.leftoverMinutes > 0) {
-      notes.push(`${plan.leftoverMinutes} min left over at the end of each day`);
+    const chosen = chosenSlots();
+    const clashes = plan.slots.filter((s) => s.clash && s.selected).length;
+    const capacity = Number(new FormData(els.form).get('capacity')) || 0;
+
+    const facts = [
+      `${plan.perDay} per day`,
+      `${byDate.size} date${byDate.size === 1 ? '' : 's'}`
+    ];
+    if (capacity > 0 && chosen.length) {
+      facts.push(`${capacity * chosen.length} seats total`);
     }
-    const clashes = plan.slots.filter((s) => s.clash).length;
-    if (clashes) notes.push(`${clashes} overlap an existing session`);
-    if (plan.slots.length > MAX_BULK) {
-      notes.push(`over the ${MAX_BULK}-session limit for one batch`);
+
+    const warnings = [];
+    if (chosen.length > MAX_BULK) {
+      warnings.push(`That is ${chosen.length} sessions, over the ${MAX_BULK} allowed in one ` +
+        'batch. Untick some and publish the rest straight after.');
+    }
+    if (clashes) {
+      warnings.push(`${clashes} selected session${clashes === 1 ? '' : 's'} overlap something ` +
+        'already on this instructor&rsquo;s calendar. Publishing anyway is allowed.');
     }
 
     els.preview.innerHTML = `
-      <div class="bulk-preview">
-        <div class="bulk-preview-head">
-          <strong id="preview-count">${chosenSlots().length} sessions will be created</strong>
-          <span class="small muted">${UI.esc(notes.join(' · '))}</span>
+      <div class="sched-head">
+        <div>
+          <span class="sched-total">${chosen.length} session${chosen.length === 1 ? '' : 's'}</span>
+          <span class="sched-sub">${UI.esc(facts.join(' · '))}</span>
         </div>
-        ${days}
-      </div>`;
+        <div class="sched-actions">
+          <button class="btn btn-secondary btn-sm" type="button" data-all="on">Select all</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-all="off">Clear</button>
+        </div>
+      </div>
+      ${days}
+      ${warnings.map((w) => `<div class="sched-warn"><span aria-hidden="true">&#9888;</span><span>${w}</span></div>`).join('')}`;
 
     updateSubmitLabel();
   }
 
-  function updatePreviewCount() {
-    const label = els.preview.querySelector('#preview-count');
-    const count = chosenSlots().length;
-    if (label) label.textContent = `${count} session${count === 1 ? '' : 's'} will be created`;
-    updateSubmitLabel();
+  /** Re-render, then put focus back where it was - pills are re-created. */
+  function refreshPreview(focusSlot) {
+    renderPreview();
+    if (focusSlot === undefined) return;
+    const back = els.preview.querySelector(`[data-slot="${focusSlot}"]`);
+    if (back) back.focus();
   }
 
   /* ---- Create ---------------------------------------------------------- */
@@ -681,23 +783,38 @@
     els.refresh.addEventListener('click', () => loadEvents());
     els.showPast.addEventListener('change', () => loadEvents());
 
-    els.form.addEventListener('change', (e) => {
-      if (e.target.name === 'mode') return applyMode(e.target.value);
-      // Anything that feeds the plan invalidates the preview, including the
-      // instructor dropdown - clash warnings are per-instructor.
-      if (mode === 'bulk' &&
-          ['windowStart', 'windowEnd', 'slotMinutes', 'gapMinutes', 'teacherEmail']
+    els.form.addEventListener('input', (e) => {
+      if (mode !== 'bulk') return;
+      if (['windowStart', 'windowEnd', 'slotMinutes', 'gapMinutes', 'capacity']
             .includes(e.target.name)) {
         renderPreview();
       }
     });
 
-    // Ticking a slot only moves the count; re-rendering here would yank focus.
-    els.preview.addEventListener('change', (e) => {
-      const box = e.target.closest('[data-slot]');
-      if (!box) return;
-      plan.slots[Number(box.dataset.slot)].selected = box.checked;
-      updatePreviewCount();
+    els.form.addEventListener('change', (e) => {
+      if (e.target.name === 'mode') return applyMode(e.target.value);
+      // Anything that feeds the plan invalidates the preview, including the
+      // instructor dropdown - clash warnings are per-instructor.
+      if (mode === 'bulk' &&
+          ['windowStart', 'windowEnd', 'slotMinutes', 'gapMinutes', 'teacherEmail', 'capacity']
+            .includes(e.target.name)) {
+        renderPreview();
+      }
+    });
+
+    els.preview.addEventListener('click', (e) => {
+      const all = e.target.closest('[data-all]');
+      if (all) {
+        const on = all.dataset.all === 'on';
+        plan.slots.forEach((slot) => { if (!slot.past) slot.selected = on; });
+        return refreshPreview();
+      }
+
+      const pill = e.target.closest('[data-slot]');
+      if (!pill || pill.disabled) return;
+      const index = Number(pill.dataset.slot);
+      plan.slots[index].selected = !plan.slots[index].selected;
+      refreshPreview(index);
     });
 
     els.form.addEventListener('reset', () => {
