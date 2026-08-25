@@ -53,6 +53,14 @@
 .btn-danger { background: var(--color-danger); }
 .btn-danger:hover { background: var(--rice-maroon); }
 
+/* OEDK's amber call-to-action. Their version sets white on amber, which only
+   reaches ~2.3:1; navy text on the same amber clears 6:1 and keeps the look. */
+.btn-gold {
+  background: var(--oedk-amber);
+  color: var(--rice-blue);
+}
+.btn-gold:hover { background: var(--oedk-gold); color: var(--rice-blue); }
+
 .btn-on-dark {
   background: #fff;
   color: var(--rice-blue);
@@ -99,6 +107,19 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+/* OEDK sets its card headings in gold uppercase. Gold on white only clears
+   about 2:1 contrast, so rather than colour the session title we use the motif
+   for the small session-type label above it, where it reads as decoration and
+   the navy title still carries the meaning. */
+.session-type {
+  display: block;
+  color: #9a7407;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
 }
 
 .badge-course[data-course="EDES210"] {
@@ -166,8 +187,9 @@
 .session-card-body { padding: var(--space-3) var(--space-5) var(--space-4); flex: 1; }
 
 .session-title {
-  margin: var(--space-2) 0 var(--space-3);
+  margin: var(--space-1) 0 var(--space-3);
   font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
   color: var(--rice-blue);
 }
 
@@ -238,7 +260,7 @@
   border-radius: inherit;
   transition: width var(--transition);
 }
-.seat-meter-fill[data-level="few"]  { background: var(--rice-gold); }
+.seat-meter-fill[data-level="few"]  { background: var(--oedk-gold); }
 .seat-meter-fill[data-level="full"] { background: var(--color-danger); }
 
 /* --------------------------------------------------------------------------
@@ -402,7 +424,10 @@ table.data .row-cancelled { opacity: 0.6; }
 .alert-warning { background: var(--color-warning-bg); border-color: var(--color-warning); color: #7a4f0c; }
 .alert-danger  { background: var(--color-danger-bg);  border-color: var(--color-danger);  color: #8a2f1a; }
 
-.alert strong { display: block; margin-bottom: 2px; }
+/* Only the leading label becomes its own line — a <strong> used mid-sentence
+   must stay inline, or phrases like "your @rice.edu account" break apart. */
+.alert > div { flex: 1 1 auto; min-width: 0; }
+.alert > div > strong:first-child { display: block; margin-bottom: 2px; }
 
 /* Toasts ------------------------------------------------------------------ */
 
@@ -636,8 +661,8 @@ table.data .row-cancelled { opacity: 0.6; }
   border-radius: 50%;
   background: var(--rice-blue-100);
   color: var(--rice-blue);
-  font-family: var(--font-serif);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
 }
 
 .steps h3 { font-size: var(--text-md); margin-bottom: var(--space-2); }

@@ -322,11 +322,11 @@ const UI = (function () {
       <article class="${classes.join(' ')}">
         <div class="session-card-head">
           <span class="badge badge-course" data-course="${esc(event.courseId)}">${esc(event.courseId)}</span>
-          ${event.sessionType ? `<span class="badge">${esc(event.sessionType)}</span>` : ''}
           ${opts.booked ? '<span class="badge badge-booked">You are booked</span>' : ''}
         </div>
 
         <div class="session-card-body">
+          ${event.sessionType ? `<span class="session-type">${esc(event.sessionType)}</span>` : ''}
           <h3 class="session-title">${esc(event.title)}</h3>
           <div class="session-meta">
             ${row('calendar', fmtRange(event.startDateTime, event.endDateTime),

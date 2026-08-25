@@ -30,7 +30,7 @@ var SETUP_OAUTH_CLIENT_ID = '';
  * Public site URL, used for the links inside notification emails.
  * Keep the trailing slash. Leave blank to omit the links entirely.
  */
-var SETUP_SITE_URL = 'https://edes210andbioe555.github.io/calendarBooking/';
+var SETUP_SITE_URL = 'https://antonysa23-meet.github.io/calendarBooking/';
 
 /**
  * Instructors who get the admin panel, as ['email@rice.edu', 'Display Name'].

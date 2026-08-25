@@ -19,3 +19,9 @@ desktop.ini
 # Local scratch
 *.local
 .env
+
+# Browser automation + design-review artifacts
+.playwright-mcp/
+*.screenshot.png
+oedk-*.png
+ours-*.png

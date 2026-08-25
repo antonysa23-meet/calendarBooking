@@ -1,15 +1,24 @@
 /* ==========================================================================
-   variables.css — Rice University palette and design tokens.
+   variables.css — design tokens, themed after oedk.rice.edu.
 
-   Every colour the site uses is declared here, so re-theming is a single-file
-   change. Raw brand values are kept separate from the semantic tokens that the
-   components actually reference.
+   The values below were measured off the live OEDK site rather than guessed:
+   Public Sans at 600/700 for headings, Rice blue #00205B, the gold #EAB10B
+   used for accents and card headings, the amber #F5A623 used on primary
+   buttons, and the #152237 ink used for dark sections.
    ========================================================================== */
 
 :root {
-  /* ---- Rice primary ---------------------------------------------------- */
-  --rice-blue: #00205B;
+  /* ---- Rice / OEDK core ------------------------------------------------ */
+  --rice-blue: #00205B;          /* Rice primary, the shield navy */
+  --oedk-blue: #004080;          /* brighter royal blue used on feature bands */
+  --oedk-ink: #152237;           /* deep navy of the dark sections */
+  --oedk-night: #0F1928;         /* near-black band behind the showcase strip */
   --rice-gray: #7C7E7F;
+
+  /* ---- OEDK accents ---------------------------------------------------- */
+  --oedk-gold: #EAB10B;          /* the signature gold: rules, card headings */
+  --oedk-amber: #F5A623;         /* primary call-to-action buttons */
+  --oedk-gold-soft: #FDF3D6;
 
   /* ---- Rice secondary blues -------------------------------------------- */
   --rice-blue-100: #E0E2E6;
@@ -21,8 +30,7 @@
   --rice-blue-900: #13133E;
   --rice-slate: #44474F;
 
-  /* ---- Rice accents ---------------------------------------------------- */
-  --rice-gold: #E9A139;
+  /* ---- Rice extended accents ------------------------------------------- */
   --rice-rust: #C04829;
   --rice-maroon: #68132E;
   --rice-purple: #362E52;
@@ -33,37 +41,40 @@
 
   /* ---- Semantic surface / text ----------------------------------------- */
   --color-bg: #ffffff;
-  --color-bg-alt: #f7f8fa;
+  --color-bg-alt: #f5f6f8;
   --color-surface: #ffffff;
   --color-surface-sunken: #fafbfc;
-  --color-border: #e2e5ea;
-  --color-border-strong: #cbd1da;
+  --color-border: #e3e6ea;
+  --color-border-strong: #c9cfd7;
 
-  --color-text: #1a1d23;
-  --color-text-muted: var(--rice-gray);
+  --color-text: #212529;         /* OEDK body text */
+  --color-text-muted: #80868B;   /* OEDK muted gray */
   --color-text-inverse: #ffffff;
 
   /* ---- Semantic action ------------------------------------------------- */
   --color-primary: var(--rice-blue);
   --color-primary-hover: #00163f;
   --color-primary-soft: var(--rice-blue-100);
+  --color-accent: var(--oedk-amber);
+  --color-accent-hover: #e08f10;
   --color-link: var(--rice-blue-500);
   --color-focus: var(--rice-blue-400);
 
   /* ---- Semantic status ------------------------------------------------- */
   --color-success: var(--rice-green);
   --color-success-bg: #eef7f0;
-  --color-warning: var(--rice-gold);
-  --color-warning-bg: #fdf5e8;
+  --color-warning: var(--oedk-gold);
+  --color-warning-bg: #fdf6e3;
   --color-danger: var(--rice-rust);
   --color-danger-bg: #fbeeeb;
   --color-info: var(--rice-blue-500);
   --color-info-bg: #eef3fa;
 
   /* ---- Typography ------------------------------------------------------ */
-  --font-serif: Georgia, "Times New Roman", "Iowan Old Style", serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-               "Helvetica Neue", Arial, sans-serif;
+  /* Public Sans is the OEDK typeface; the stack degrades to system sans. */
+  --font-sans: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
 
   --text-xs: 0.75rem;
@@ -75,8 +86,13 @@
   --text-2xl: 1.75rem;
   --text-3xl: 2.25rem;
 
-  --leading-tight: 1.25;
-  --leading-normal: 1.6;
+  --weight-body: 400;
+  --weight-medium: 500;
+  --weight-semi: 600;            /* OEDK headings sit at 600 */
+  --weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.55;
 
   /* ---- Spacing --------------------------------------------------------- */
   --space-1: 0.25rem;
@@ -89,19 +105,22 @@
   --space-8: 4rem;
 
   /* ---- Shape ----------------------------------------------------------- */
-  --radius-sm: 3px;
-  --radius: 5px;
-  --radius-lg: 8px;
+  --radius-sm: 4px;
+  --radius: 8px;                 /* OEDK button radius */
+  --radius-lg: 10px;
   --radius-pill: 999px;
 
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-lg: 0 10px 24px rgba(16, 24, 40, 0.10), 0 3px 8px rgba(16, 24, 40, 0.06);
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.09), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 28px rgba(16, 24, 40, 0.12), 0 4px 10px rgba(16, 24, 40, 0.06);
+
+  /* The gold hairline OEDK uses to separate full-bleed sections. */
+  --rule-gold: 3px solid var(--oedk-gold);
 
   /* ---- Layout ---------------------------------------------------------- */
-  --container: 1120px;
-  --container-narrow: 780px;
-  --header-height: 72px;
+  --container: 1200px;
+  --container-narrow: 800px;
+  --header-height: 80px;
 
   --transition: 140ms ease;
 }
