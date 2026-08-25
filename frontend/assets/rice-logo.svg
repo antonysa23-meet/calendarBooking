@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER MARK — replace before launch.
+
+  This is a plain geometric stand-in drawn in the Rice blue (#00205B) so the
+  layout can be reviewed. It is NOT the university's logo and must not be used
+  publicly. Download the official Rice wordmark from brand.rice.edu and save it
+  over this file as rice-logo.svg (keep roughly a 5:1 aspect ratio so the
+  header spacing holds), or point the <img> tags in the four HTML pages at
+  whatever filename the official asset uses.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" role="img"
+     aria-label="Rice University (placeholder mark)">
+  <rect x="0" y="2" width="36" height="36" rx="4" fill="#00205B"/>
+  <text x="18" y="28" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif" font-size="22"
+        font-weight="700" fill="#FFFFFF">R</text>
+
+  <text x="48" y="19" font-family="Georgia, 'Times New Roman', serif"
+        font-size="16" font-weight="700" fill="#00205B" letter-spacing="0.5">RICE</text>
+  <text x="48" y="33" font-family="Helvetica, Arial, sans-serif"
+        font-size="9" fill="#7C7E7F" letter-spacing="2.2">UNIVERSITY</text>
+</svg>

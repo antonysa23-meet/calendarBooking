@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · EDES 210 &amp; BIOE 555 Lab Sessions</title>
+<meta name="description" content="What the lab session booking site stores about you, why, and who can see it.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="assets/rice-logo.svg" alt="Rice University">
+      <span class="brand-text">
+        <span class="brand-title">Lab Session Booking</span>
+        <span class="brand-sub">EDES 210 &middot; BIOE 555</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"></button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="book.html">Book a Slot</a>
+      <a class="nav-link" href="my-bookings.html">My Bookings</a>
+      <a class="nav-link" href="admin.html" data-teacher-only hidden>Admin</a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <div class="auth-slot" id="auth-slot"></div>
+    </nav>
+  </div>
+</header>
+
+<div class="page-head">
+  <div class="container container-narrow">
+    <h1>Privacy</h1>
+    <p>
+      This site is run by the teaching staff of EDES&nbsp;210 and BIOE&nbsp;555 at Rice
+      University to manage bookings for equipment and training sessions at the Oshman
+      Engineering Design Kitchen. It is a course tool, not a commercial service.
+    </p>
+  </div>
+</div>
+
+<main class="site-main">
+  <div class="container container-narrow">
+
+    <p class="small muted">Last updated 25 August 2026.</p>
+
+    <section class="section">
+      <h2>What we collect</h2>
+
+      <p>When you sign in with your Rice Google account, Google gives this site your
+        <strong>name</strong>, <strong>email address</strong> and <strong>profile
+        picture</strong>. We use the email address to confirm you are a member of the Rice
+        community and to identify your bookings.</p>
+
+      <p>When you book a session, we record your <strong>name</strong>, <strong>email
+        address</strong>, <strong>which session you booked</strong> and the
+        <strong>time you booked it</strong>. If you cancel, we record that too, along with
+        when.</p>
+
+      <p>Your profile picture is shown in the page header while you are signed in. It is
+        never stored — it is read from Google each time and disappears when you sign out.</p>
+
+      <p>We do not use cookies for tracking, we run no analytics, and there are no
+        advertising or third-party scripts on this site.</p>
+    </section>
+
+    <section class="section">
+      <h2>Why we collect it</h2>
+
+      <ul>
+        <li>To confirm that you hold a Rice University account. Only
+          <strong>@rice.edu</strong> accounts can sign in.</li>
+        <li>To keep sessions within their seat limit and stop the same person booking a
+          session twice.</li>
+        <li>To add you as a guest on the session's Google Calendar event, so you get the
+          invitation and reminder.</li>
+        <li>To email you a booking confirmation, and to tell the session's instructor who
+          is coming.</li>
+        <li>To give instructors a roster, so they know who to expect and can follow up
+          about attendance or safety requirements.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Where it is stored</h2>
+
+      <p>All of it lives inside Google Workspace, in accounts owned by the course:</p>
+
+      <ul>
+        <li>Bookings and session details are in a <strong>Google Sheet</strong> owned by the
+          course account.</li>
+        <li>Sessions are <strong>Google Calendar</strong> events on a calendar owned by the
+          same account. Booking a session adds you as a guest on that event.</li>
+        <li>Confirmation emails are sent through <strong>Gmail</strong> from that account.</li>
+      </ul>
+
+      <p>Nothing is stored on any other server, and nothing is shared with anyone outside
+        the course. Your data is never sold, and it is never used to train any model.</p>
+
+      <p><strong>One thing worth knowing about calendar invitations:</strong> when you book a
+        session you become a guest on that calendar event, alongside the instructor and the
+        other students who booked it. By default Google Calendar lets guests on an event see
+        the other guests' names and email addresses. This is standard Google Calendar
+        behaviour and is the same as being invited to any shared event.</p>
+    </section>
+
+    <section class="section">
+      <h2>Your sign-in</h2>
+
+      <p>Signing in produces a short-lived Google identity token. It is held in your
+        browser's session storage, is discarded when you close the tab or sign out, and
+        expires within an hour regardless. The site never sees or stores your password, and
+        it has no access to your Google account beyond your name, email address and profile
+        picture.</p>
+
+      <p>This application's use of information received from Google APIs adheres to the
+        <a href="https://developers.google.com/terms/api-services-user-data-policy"
+           rel="noopener">Google API Services User Data Policy</a>, including the Limited
+        Use requirements.</p>
+    </section>
+
+    <section class="section">
+      <h2>How long we keep it</h2>
+
+      <p>Booking records are kept for the academic year so instructors can confirm who
+        completed which training, then cleared out. Cancelled bookings are marked cancelled
+        rather than deleted, so that the record of who attended what stays accurate.</p>
+    </section>
+
+    <section class="section">
+      <h2>Seeing or removing your data</h2>
+
+      <p>You can see all of your own bookings at any time on the
+        <a href="my-bookings.html">My Bookings</a> page, and cancel any of them yourself.</p>
+
+      <p>To ask what is held about you, to correct it, or to have it removed, contact the
+        EDES&nbsp;210 / BIOE&nbsp;555 teaching staff — the instructor named on any session
+        you booked, or the course email address. Bear in mind that removing a booking record
+        also removes the evidence that you completed a required safety training.</p>
+    </section>
+
+    <section class="section">
+      <h2>Changes</h2>
+
+      <p>If this policy changes, the date at the top of this page changes with it.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <p><strong>Rice University</strong><br>Oshman Engineering Design Kitchen</p>
+      <p class="small">EDES 210 &mdash; Prototyping and Fabrication &middot; BIOE 555</p>
+    </div>
+    <div>
+      <p class="small">
+        Questions about a specific session go to the instructor listed on it.
+      </p>
+      <p class="small">&copy; <span data-year>2026</span> Rice University &middot;
+        <a href="privacy.html">Privacy</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    UI.initChrome();
+    Auth.init();
+  });
+</script>
+</body>
+</html>

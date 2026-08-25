@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instructor Admin · EDES 210 &amp; BIOE 555</title>
+<meta name="description" content="Create lab sessions, view rosters and cancel sessions.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="assets/rice-logo.svg" alt="Rice University">
+      <span class="brand-text">
+        <span class="brand-title">Lab Session Booking</span>
+        <span class="brand-sub">EDES 210 &middot; BIOE 555</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"></button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="book.html">Book a Slot</a>
+      <a class="nav-link" href="my-bookings.html">My Bookings</a>
+      <a class="nav-link" href="admin.html" data-teacher-only hidden>Admin</a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <div class="auth-slot" id="auth-slot"></div>
+    </nav>
+  </div>
+</header>
+
+<div class="page-head">
+  <div class="container">
+    <h1>Instructor admin</h1>
+    <p>
+      Publish a session, check who is coming, or cancel one. Any instructor on the course
+      staff list can manage any session &mdash; sessions are not locked to whoever created them.
+    </p>
+  </div>
+</div>
+
+<main class="site-main">
+  <div class="container">
+
+    <!-- Everything below is swapped in by admin.js once the server confirms the
+         caller is on the Teachers allow-list. -->
+    <div id="gate"></div>
+
+    <div id="admin" hidden>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>Create a session</h2>
+            <p class="section-sub">Publishing creates the calendar event and opens booking immediately.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <form id="create-form" novalidate>
+              <div class="form-grid">
+
+                <div class="field">
+                  <label for="courseId">Course <span class="required">*</span></label>
+                  <select id="courseId" name="courseId" required></select>
+                </div>
+
+                <div class="field">
+                  <label for="sessionType">Session type</label>
+                  <select id="sessionType" name="sessionType"></select>
+                </div>
+
+                <div class="field span-2">
+                  <label for="title">Title <span class="required">*</span></label>
+                  <input type="text" id="title" name="title" maxlength="150" required
+                         placeholder="Laser Cutter Safety Training">
+                  <p class="hint">Shown on the card and used as the calendar event title.</p>
+                </div>
+
+                <div class="field">
+                  <label for="date">Date <span class="required">*</span></label>
+                  <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="field">
+                  <label for="startTime">Start <span class="required">*</span></label>
+                  <input type="time" id="startTime" name="startTime" step="900" required>
+                </div>
+
+                <div class="field">
+                  <label for="endTime">End <span class="required">*</span></label>
+                  <input type="time" id="endTime" name="endTime" step="900" required>
+                  <p class="hint" id="tz-hint"></p>
+                </div>
+
+                <div class="field">
+                  <label for="capacity">Capacity <span class="required">*</span></label>
+                  <input type="number" id="capacity" name="capacity" min="1" max="500" value="8" required>
+                  <p class="hint">Booking closes automatically at this number.</p>
+                </div>
+
+                <div class="field">
+                  <label for="location">Location</label>
+                  <input type="text" id="location" name="location" maxlength="200"
+                         placeholder="OEDK, Fabrication Shop">
+                </div>
+
+                <div class="field">
+                  <label for="teacherEmail">Instructor</label>
+                  <select id="teacherEmail" name="teacherEmail"></select>
+                  <p class="hint">Receives booking notifications and is invited to the event.</p>
+                </div>
+
+                <div class="field span-2">
+                  <label for="description">Description</label>
+                  <textarea id="description" name="description" maxlength="2000"
+                            placeholder="What students should bring, prerequisites, what the session covers&hellip;"></textarea>
+                </div>
+
+              </div>
+
+              <div class="form-actions">
+                <button class="btn" type="submit" id="create-submit">Publish session</button>
+                <button class="btn btn-ghost" type="reset">Reset</button>
+                <span class="small muted" id="create-status" aria-live="polite"></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>All sessions</h2>
+            <p class="section-sub">Upcoming first. Open a roster to see who booked.</p>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <label class="small muted" for="show-past" style="display:flex;gap:.4rem;align-items:center;margin:0">
+              <input type="checkbox" id="show-past" style="width:auto"> Include past &amp; cancelled
+            </label>
+            <button class="btn btn-secondary btn-sm" type="button" id="refresh-events">Refresh</button>
+          </div>
+        </div>
+
+        <div id="events"></div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <p><strong>Rice University</strong><br>Oshman Engineering Design Kitchen</p>
+      <p class="small">EDES 210 &mdash; Prototyping and Fabrication &middot; BIOE 555</p>
+    </div>
+    <div>
+      <p class="small">
+        Instructor access is granted from the <strong>Teachers</strong> tab of the booking
+        spreadsheet.
+      </p>
+      <p class="small">&copy; <span data-year>2026</span> Rice University &middot;
+        <a href="privacy.html">Privacy</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

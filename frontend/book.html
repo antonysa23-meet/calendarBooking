@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a Slot · EDES 210 &amp; BIOE 555</title>
+<meta name="description" content="Browse open fabrication lab sessions and reserve a seat.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="assets/rice-logo.svg" alt="Rice University">
+      <span class="brand-text">
+        <span class="brand-title">Lab Session Booking</span>
+        <span class="brand-sub">EDES 210 &middot; BIOE 555</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"></button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="book.html">Book a Slot</a>
+      <a class="nav-link" href="my-bookings.html">My Bookings</a>
+      <a class="nav-link" href="admin.html" data-teacher-only hidden>Admin</a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <div class="auth-slot" id="auth-slot"></div>
+    </nav>
+  </div>
+</header>
+
+<div class="page-head">
+  <div class="container">
+    <h1>Book a slot</h1>
+    <p>
+      Every open training and equipment session, soonest first. Seat counts are live &mdash;
+      if a session fills while you are reading, booking it will tell you so rather than
+      quietly overbooking.
+    </p>
+  </div>
+</div>
+
+<main class="site-main">
+  <div class="container">
+
+    <div id="signed-out-note"></div>
+
+    <div class="toolbar">
+      <div class="field">
+        <label for="filter-course">Course</label>
+        <select id="filter-course">
+          <option value="">All courses</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="filter-search">Search</label>
+        <input type="search" id="filter-search" placeholder="Laser cutter, molding, room&hellip;" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="filter-availability">Availability</label>
+        <select id="filter-availability">
+          <option value="open">Seats available</option>
+          <option value="all">All sessions</option>
+        </select>
+      </div>
+
+      <div class="toolbar-spacer"></div>
+
+      <div class="field">
+        <button class="btn btn-secondary" type="button" id="refresh-btn">Refresh</button>
+      </div>
+    </div>
+
+    <p class="result-count" id="result-count" aria-live="polite"></p>
+
+    <div id="events"></div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <p><strong>Rice University</strong><br>Oshman Engineering Design Kitchen</p>
+      <p class="small">EDES 210 &mdash; Prototyping and Fabrication &middot; BIOE 555</p>
+    </div>
+    <div>
+      <p class="small">
+        Booking adds you as a guest on the shared course calendar and emails your confirmation.
+      </p>
+      <p class="small">&copy; <span data-year>2026</span> Rice University &middot;
+        <a href="privacy.html">Privacy</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/book.js"></script>
+</body>
+</html>

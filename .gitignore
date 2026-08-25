@@ -1,0 +1,21 @@
+# clasp credentials — an OAuth refresh token for the shared account.
+# Never commit this.
+.clasprc.json
+~/.clasprc.json
+
+# Node tooling (only needed if you install clasp locally)
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Local scratch
+*.local
+.env

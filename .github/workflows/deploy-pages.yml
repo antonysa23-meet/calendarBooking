@@ -1,0 +1,53 @@
+name: Deploy site to GitHub Pages
+
+# The static site lives in frontend/, not at the repo root, so classic branch
+# deployment cannot be used. This publishes that one folder as the Pages
+# artifact. Set Settings -> Pages -> Source to "GitHub Actions" once, or this
+# workflow will run green and change nothing.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Fail fast if config.js still has its placeholder
+        run: |
+          if grep -q 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE' frontend/js/config.js; then
+            echo "::warning file=frontend/js/config.js::APPS_SCRIPT_URL is still the placeholder - the deployed site will not be able to reach its backend."
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the frontend folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
