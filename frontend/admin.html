@@ -66,22 +66,27 @@
           </div>
         </div>
 
+        <!-- Outside the form on purpose: this chooses which form you get, so
+             it is not one of the form's own fields, and a reset must not
+             silently throw you back to the single-session view. -->
+        <div class="mode-choice">
+          <div class="mode-toggle" id="mode-toggle" role="radiogroup"
+               aria-label="How many sessions to publish">
+            <label>
+              <input type="radio" name="mode" value="single" checked>
+              <span class="mode-name">One session</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="bulk">
+              <span class="mode-name">Multiple sessions</span>
+            </label>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-body">
             <form id="create-form" novalidate>
 
-              <div class="mode-toggle" role="radiogroup" aria-label="How many sessions to publish">
-                <label>
-                  <input type="radio" name="mode" value="single" checked>
-                  <span class="mode-name">One session</span>
-                  <span class="mode-hint">A single slot at a set time</span>
-                </label>
-                <label>
-                  <input type="radio" name="mode" value="bulk">
-                  <span class="mode-name">Multiple sessions</span>
-                  <span class="mode-hint">Split a window across several days</span>
-                </label>
-              </div>
 
               <div class="form-grid">
 

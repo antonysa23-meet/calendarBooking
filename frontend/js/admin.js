@@ -18,6 +18,7 @@
     gate: document.querySelector('#gate'),
     panel: document.querySelector('#admin'),
     form: document.querySelector('#create-form'),
+    modeToggle: document.querySelector('#mode-toggle'),
     submit: document.querySelector('#create-submit'),
     status: document.querySelector('#create-status'),
     course: document.querySelector('#courseId'),
@@ -497,16 +498,13 @@
       const result = await call();
       els.status.textContent = describe(result);
 
-      // Stay in whichever mode they were in. Anyone publishing a batch is
-      // likely publishing another - a schedule over the per-batch limit has to
-      // be sent in two goes - and being thrown back to the single form each
-      // time would be exactly wrong.
-      const keepMode = mode;
+      // The mode lives outside the form, so a reset leaves it alone - which is
+      // what we want. Anyone publishing a batch is likely publishing another;
+      // a schedule over the per-batch limit has to go out in two goes.
       els.form.reset();
       if (picker) picker.clear();
       presetDateTimes();
-      els.form.querySelector(`[name="mode"][value="${keepMode}"]`).checked = true;
-      applyMode(keepMode);
+      applyMode(mode);
 
       await loadEvents({ quiet: true });
     } catch (err) {
@@ -791,8 +789,11 @@
       }
     });
 
+    els.modeToggle.addEventListener('change', (e) => {
+      if (e.target.name === 'mode') applyMode(e.target.value);
+    });
+
     els.form.addEventListener('change', (e) => {
-      if (e.target.name === 'mode') return applyMode(e.target.value);
       // Anything that feeds the plan invalidates the preview, including the
       // instructor dropdown - clash warnings are per-instructor.
       if (mode === 'bulk' &&
@@ -819,13 +820,11 @@
 
     els.form.addEventListener('reset', () => {
       // The reset lands after this handler, so restore defaults on the next
-      // tick - and follow whatever the mode radio ends up saying rather than
-      // forcing it, so a publish can keep the user where they were.
+      // tick. The mode is outside the form and therefore survives untouched.
       setTimeout(() => {
         if (picker) picker.clear();
         presetDateTimes();
-        const chosen = els.form.querySelector('[name="mode"]:checked');
-        applyMode(chosen ? chosen.value : 'single');
+        applyMode(mode);
       }, 0);
     });
 
