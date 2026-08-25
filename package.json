@@ -2,7 +2,7 @@
   "name": "proto-fab-cal",
   "version": "1.0.0",
   "private": true,
-  "description": "Lab session booking for EDES 210 and BIOE 555 — Apps Script backend, static GitHub Pages frontend.",
+  "description": "Lab session booking for EDES 210 and BIOE 555 - Apps Script backend, static GitHub Pages frontend.",
   "scripts": {
     "test": "node tests/run-tests.js",
     "serve": "node tests/static-server.js",

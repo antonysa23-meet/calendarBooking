@@ -1,4 +1,4 @@
-# clasp credentials — an OAuth refresh token for the shared account.
+# clasp credentials - an OAuth refresh token for the shared account.
 # Never commit this.
 .clasprc.json
 ~/.clasprc.json

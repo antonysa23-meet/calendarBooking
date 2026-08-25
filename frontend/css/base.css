@@ -1,5 +1,5 @@
 /* ==========================================================================
-   base.css — reset, typography, page furniture (header, nav, footer, hero).
+   base.css - reset, typography, page furniture (header, nav, footer, hero).
    ========================================================================== */
 
 *,
@@ -118,7 +118,7 @@ hr {
   line-height: 1.65;
 }
 
-/* Visible to screen readers only — used for table action-column headings. */
+/* Visible to screen readers only - used for table action-column headings. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -328,7 +328,7 @@ hr {
 }
 
 /* --------------------------------------------------------------------------
-   Tagline band — the "inspire | enable | invent | impact" strip
+   Tagline band - the "inspire | enable | invent | impact" strip
    -------------------------------------------------------------------------- */
 
 .tagline-band {

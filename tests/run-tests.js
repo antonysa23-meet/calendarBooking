@@ -1,5 +1,5 @@
 /**
- * run-tests.js — runs the real apps-script/ sources against the mocks.
+ * run-tests.js - runs the real apps-script/ sources against the mocks.
  *
  *   node tests/run-tests.js
  *
@@ -29,7 +29,7 @@ function check(label, condition, detail) {
     console.log('  ✓ ' + label);
   } else {
     failed++;
-    failures.push(label + (detail ? ' — ' + detail : ''));
+    failures.push(label + (detail ? ' - ' + detail : ''));
     console.log('  ✗ ' + label + (detail ? '  (' + detail + ')' : ''));
   }
 }
@@ -116,7 +116,7 @@ function makeEvent(ctx, overrides = {}) {
 
 /* ========================================================================== */
 
-group('Auth — domain and token rules');
+group('Auth - domain and token rules');
 {
   const { ctx } = boot();
 
@@ -162,7 +162,7 @@ group('Auth — domain and token rules');
 
 /* ========================================================================== */
 
-group('createEvent — teacher gating and validation');
+group('createEvent - teacher gating and validation');
 {
   const { ctx, mocks } = boot();
 
@@ -221,7 +221,7 @@ group('createEvent — teacher gating and validation');
 
 /* ========================================================================== */
 
-group('bookSlot — capacity, duplicates, side effects');
+group('bookSlot - capacity, duplicates, side effects');
 {
   const { ctx, mocks } = boot();
   const event = makeEvent(ctx, { capacity: 1 });
@@ -256,7 +256,7 @@ group('bookSlot — capacity, duplicates, side effects');
 }
 
 {
-  // Capacity holds when many students pile in — the lock serialises them, so
+  // Capacity holds when many students pile in - the lock serialises them, so
   // exactly `capacity` bookings should survive however many attempts arrive.
   const { ctx } = boot();
   const event = makeEvent(ctx, { capacity: 3 });
@@ -315,7 +315,7 @@ group('bookSlot — capacity, duplicates, side effects');
 
 /* ========================================================================== */
 
-group('cancelBooking — ownership and seat release');
+group('cancelBooking - ownership and seat release');
 {
   const { ctx, mocks } = boot();
   const event = makeEvent(ctx, { capacity: 2 });
@@ -355,7 +355,7 @@ group('cancelBooking — ownership and seat release');
 
 /* ========================================================================== */
 
-group('listMyBookings — scoping to the caller');
+group('listMyBookings - scoping to the caller');
 {
   const { ctx } = boot();
   const a = makeEvent(ctx, { capacity: 5, title: 'Session A' });
@@ -387,7 +387,7 @@ group('listMyBookings — scoping to the caller');
 
 /* ========================================================================== */
 
-group('getRoster and cancelEvent — instructor actions');
+group('getRoster and cancelEvent - instructor actions');
 {
   const { ctx, mocks } = boot();
   const event = makeEvent(ctx, { capacity: 5 });
@@ -437,7 +437,7 @@ group('getRoster and cancelEvent — instructor actions');
 
 /* ========================================================================== */
 
-group('listEvents — filtering and seat maths');
+group('listEvents - filtering and seat maths');
 {
   const { ctx } = boot();
   const edes = makeEvent(ctx, { courseId: 'EDES210', title: 'EDES session', capacity: 4 });
@@ -463,7 +463,7 @@ group('listEvents — filtering and seat maths');
 
 /* ========================================================================== */
 
-group('Router — doGet / doPost envelopes');
+group('Router - doGet / doPost envelopes');
 {
   const { ctx } = boot();
   const parse = (out) => JSON.parse(out.getContent());
@@ -538,7 +538,7 @@ group('Configuration guards');
 
 /* ========================================================================== */
 
-group('Escaping — untrusted text in emails');
+group('Escaping - untrusted text in emails');
 {
   const { ctx, mocks } = boot();
   const event = makeEvent(ctx, {

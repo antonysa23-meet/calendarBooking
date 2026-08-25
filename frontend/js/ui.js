@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ui.js — shared DOM helpers: escaping, formatting, toasts, modals, icons.
+   ui.js - shared DOM helpers: escaping, formatting, toasts, modals, icons.
    Loaded on every page before the page-specific script.
    ========================================================================== */
 
@@ -55,7 +55,7 @@ const UI = (function () {
     return `${fmtDate(startIso)} · ${fmtTime(startIso)} – ${fmtTime(endIso)}${suffix}`;
   }
 
-  /** "in 3 days", "tomorrow", "today" — for at-a-glance urgency. */
+  /** "in 3 days", "tomorrow", "today" - for at-a-glance urgency. */
   function relativeDay(iso) {
     const d = new Date(iso);
     if (isNaN(d)) return '';

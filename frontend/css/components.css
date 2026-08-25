@@ -1,5 +1,5 @@
 /* ==========================================================================
-   components.css — buttons, cards, badges, forms, tables, modals, feedback.
+   components.css - buttons, cards, badges, forms, tables, modals, feedback.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -424,7 +424,7 @@ table.data .row-cancelled { opacity: 0.6; }
 .alert-warning { background: var(--color-warning-bg); border-color: var(--color-warning); color: #7a4f0c; }
 .alert-danger  { background: var(--color-danger-bg);  border-color: var(--color-danger);  color: #8a2f1a; }
 
-/* Only the leading label becomes its own line — a <strong> used mid-sentence
+/* Only the leading label becomes its own line - a <strong> used mid-sentence
    must stay inline, or phrases like "your @rice.edu account" break apart. */
 .alert > div { flex: 1 1 auto; min-width: 0; }
 .alert > div > strong:first-child { display: block; margin-bottom: 2px; }

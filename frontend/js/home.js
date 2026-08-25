@@ -1,5 +1,5 @@
 /* ==========================================================================
-   home.js — landing page: chrome, sign-in, and the next few open sessions.
+   home.js - landing page: chrome, sign-in, and the next few open sessions.
    ========================================================================== */
 
 (function () {

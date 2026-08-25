@@ -1,9 +1,9 @@
 /* ==========================================================================
-   auth.js — Google Identity Services sign-in.
+   auth.js - Google Identity Services sign-in.
 
    The browser holds a Google ID token; every privileged API call sends it in
    the POST body and the backend verifies it against Google before trusting any
-   claim in it. Nothing here is a security boundary — hiding the Admin link is
+   claim in it. Nothing here is a security boundary - hiding the Admin link is
    a convenience, and the server re-checks the allow-list on every call.
 
    The token lives in sessionStorage: it expires after an hour anyway, and
@@ -282,7 +282,7 @@ const Auth = (function () {
           cancel_on_tap_outside: true,
           ux_mode: 'popup',
           itp_support: true,
-          // Hint only — the account picker prefers this domain, and the server
+          // Hint only - the account picker prefers this domain, and the server
           // rejects anything else regardless of what the picker allows.
           hd: (window.APP_CONFIG && window.APP_CONFIG.HOSTED_DOMAIN) || undefined
         });

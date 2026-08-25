@@ -1,5 +1,5 @@
 /* ==========================================================================
-   admin.js — instructor panel: publish sessions, read rosters, cancel sessions.
+   admin.js - instructor panel: publish sessions, read rosters, cancel sessions.
 
    The gate below is UX only. Every action here is re-checked against the
    Teachers allow-list server-side, so a determined visitor who un-hides the
@@ -308,7 +308,7 @@
                 await navigator.clipboard.writeText(emails);
                 UI.toast(`Copied ${roster.length} email address${roster.length === 1 ? '' : 'es'}.`, 'success', 4000);
               } catch (e) {
-                UI.toast('Could not copy automatically — select the addresses manually.', 'warning');
+                UI.toast('Could not copy automatically - select the addresses manually.', 'warning');
               }
             });
           }
@@ -334,7 +334,7 @@
         ? `${event.bookedCount} student${event.bookedCount === 1 ? '' : 's'} will be emailed and ` +
           'the event will disappear from their calendars.'
         : 'Nobody has booked this session yet, so no students will be notified.',
-      detail: 'This cannot be undone — you would have to publish the session again.',
+      detail: 'This cannot be undone - you would have to publish the session again.',
       confirmLabel: 'Yes, cancel the session',
       cancelLabel: 'Keep it',
       danger: true
@@ -353,7 +353,7 @@
       );
       if (result.calendarUpdated === false) {
         UI.toast(
-          'The calendar event could not be deleted automatically — please remove it by hand.',
+          'The calendar event could not be deleted automatically - please remove it by hand.',
           'warning', 12000
         );
       }

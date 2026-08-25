@@ -1,9 +1,9 @@
 /**
- * gas-mocks.js — in-memory stand-ins for the Apps Script services.
+ * gas-mocks.js - in-memory stand-ins for the Apps Script services.
  *
  * Enough of SpreadsheetApp / CalendarApp / MailApp / LockService / UrlFetchApp
  * to run the real backend files under Node, so the booking rules can be tested
- * without deploying. Not a general-purpose emulator — it implements exactly the
+ * without deploying. Not a general-purpose emulator - it implements exactly the
  * surface apps-script/ uses.
  *
  * ID tokens are faked: a token of the form "tok:email@rice.edu:Display Name"
@@ -206,7 +206,7 @@ function createMocks(options = {}) {
     getScriptLock: () => ({
       tryLock: () => {
         if (options.lockUnavailable) return false;
-        if (lockHeld) throw new Error('mock lock is not re-entrant — a nested tryLock is a bug');
+        if (lockHeld) throw new Error('mock lock is not re-entrant - a nested tryLock is a bug');
         lockHeld = true;
         return true;
       },
@@ -219,7 +219,7 @@ function createMocks(options = {}) {
   const UrlFetchApp = {
     fetch(url) {
       const token = decodeURIComponent(String(url).split('id_token=')[1] || '');
-      // Format: tok:<email>:<name>  — anything else is treated as invalid.
+      // Format: tok:<email>:<name>  - anything else is treated as invalid.
       const parts = token.split(':');
       if (parts[0] !== 'tok' || parts.length < 2) {
         return { getResponseCode: () => 400, getContentText: () => '{"error":"invalid_token"}' };

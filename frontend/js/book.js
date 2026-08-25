@@ -1,5 +1,5 @@
 /* ==========================================================================
-   book.js — browse open sessions and take a seat.
+   book.js - browse open sessions and take a seat.
    ========================================================================== */
 
 (function () {
@@ -247,7 +247,7 @@
     els.refresh.addEventListener('click', () => loadEvents());
 
     // Re-check the "you are booked" badges whenever sign-in state changes.
-    // Only the bookings are refetched here — the session list is already in
+    // Only the bookings are refetched here - the session list is already in
     // flight from the initial load and does not depend on who is signed in.
     Auth.onChange(async (snapshot) => {
       renderSignedOutNote(snapshot.signedIn);

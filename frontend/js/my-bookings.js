@@ -1,5 +1,5 @@
 /* ==========================================================================
-   my-bookings.js — the student's own seats, and releasing them.
+   my-bookings.js - the student's own seats, and releasing them.
    ========================================================================== */
 
 (function () {

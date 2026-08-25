@@ -1,5 +1,5 @@
 /* ==========================================================================
-   config.js — the only file you need to edit after deploying.
+   config.js - the only file you need to edit after deploying.
 
    Fill in both values below. Neither is a secret: the Apps Script URL is a
    public endpoint that authorises every privileged call itself, and an OAuth
@@ -14,7 +14,7 @@ window.APP_CONFIG = {
    * Apps Script editor -> Deploy -> New deployment -> Web app
    *   Execute as:      Me (edes210andbioe555@gmail.com)
    *   Who has access:  Anyone
-   * Copy the URL it gives you. It must end in /exec — a /dev URL only works
+   * Copy the URL it gives you. It must end in /exec - a /dev URL only works
    * while you are signed in as the owner and will fail for students.
    */
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyu5VpJExAo2nbYJaLkf0CbYfcSpD-ick3sRyVZcIDhOy7xEx2XfnbNi4T4axqF0kUJfw/exec',
@@ -25,7 +25,7 @@ window.APP_CONFIG = {
    * origin (e.g. https://edes210andbioe555.github.io) and, for local work,
    * http://localhost:8080.
    *
-   * Leave this blank to have the page fetch it from the backend instead — one
+   * Leave this blank to have the page fetch it from the backend instead - one
    * fewer thing to keep in sync, at the cost of one extra request before the
    * sign-in button appears.
    */

@@ -1,17 +1,17 @@
 /* ==========================================================================
-   api.js — the fetch wrapper every other script depends on.
+   api.js - the fetch wrapper every other script depends on.
 
    Two things here are load-bearing and easy to break:
 
    1. POSTs send Content-Type: text/plain;charset=utf-8 with a JSON *string* as
       the body. An application/json body would make the browser fire a CORS
-      preflight (OPTIONS), and Apps Script Web Apps do not answer preflights —
+      preflight (OPTIONS), and Apps Script Web Apps do not answer preflights -
       the request fails before it ever reaches the script. text/plain qualifies
       as a "simple request", so the browser skips the preflight.
 
    2. Apps Script cannot return HTTP status codes, so every response is 200 and
       carries an envelope: {success, data|error, message}. Never branch on
-      res.ok — branch on the envelope.
+      res.ok - branch on the envelope.
    ========================================================================== */
 
 /** Error carrying the backend's machine-readable code (see ERR in Constants.js). */
@@ -102,7 +102,7 @@ const Api = (function () {
     try {
       const response = await fetch(baseUrl(), {
         method: 'POST',
-        // Deliberately text/plain — see the note at the top of this file.
+        // Deliberately text/plain - see the note at the top of this file.
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body,
         redirect: 'follow'

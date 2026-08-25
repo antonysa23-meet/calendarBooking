@@ -1,4 +1,4 @@
-# Proto Fab Cal — Lab Session Booking
+# Proto Fab Cal - Lab Session Booking
 
 Booking site for one-off equipment and training sessions in **EDES 210**
 (Prototyping and Fabrication) and **BIOE 555**, run out of Rice University's
@@ -9,7 +9,7 @@ Teachers publish a session with a seat cap; students sign in with their
 notification emails are handled automatically.
 
 Everything runs on Google Workspace tools the shared course account already
-has — there is no server to pay for and nothing to keep running.
+has - there is no server to pay for and nothing to keep running.
 
 ---
 
@@ -43,7 +43,7 @@ has — there is no server to pay for and nothing to keep running.
 
 ```
 apps-script/          backend (pushed to Apps Script with clasp)
-  Code.js               doGet/doPost router — the seam everything hangs off
+  Code.js               doGet/doPost router - the seam everything hangs off
   Auth.js               token verification, @rice.edu gate, teacher allow-list
   Events.js             listing + teacher-only create/cancel/roster
   Bookings.js           booking and cancellation, capacity under a script lock
@@ -52,12 +52,12 @@ apps-script/          backend (pushed to Apps Script with clasp)
   SheetService.js       generic row CRUD over the spreadsheet
   Constants.js          tab names, column schema, error codes
   Utils.js              response envelopes, dates, escaping
-  Setup.js              oneTimeSetup() and maintenance helpers — run by hand
+  Setup.js              oneTimeSetup() and maintenance helpers - run by hand
 frontend/             the static site (this folder is what Pages publishes)
   index.html book.html my-bookings.html admin.html 404.html
   css/                variables.css (the whole Rice palette), base, components
   js/                 config.js ← the only file you edit after deploying
-  assets/             rice-logo.svg (PLACEHOLDER — see step 8)
+  assets/             rice-logo.svg (PLACEHOLDER - see step 8)
 tests/                Node harness that runs the backend against fake Google
                       services. `npm test`. No deployment needed.
 .github/workflows/    Pages deployment
@@ -65,7 +65,7 @@ tests/                Node harness that runs the backend against fake Google
 
 ---
 
-## Setup — what I need from you
+## Setup - what I need from you
 
 Steps 1–8 need an interactive login to `edes210andbioe555@gmail.com` and cannot
 be automated. Everything else is already written and committed.
@@ -80,7 +80,7 @@ API** on. Without this, `clasp` cannot push.
 
 ```bash
 npm install -g @google/clasp
-clasp login          # opens a browser — sign in as the shared account
+clasp login          # opens a browser - sign in as the shared account
 ```
 
 ### 3. Create the Apps Script project
@@ -98,7 +98,7 @@ clasp push
 ```
 
 > If `clasp create` complains that `.clasp.json` already exists, delete the
-> placeholder file first — it ships with `PASTE_YOUR_SCRIPT_ID_HERE` in it.
+> placeholder file first - it ships with `PASTE_YOUR_SCRIPT_ID_HERE` in it.
 
 ### 4. Create the Sheet and the calendar
 
@@ -107,7 +107,7 @@ clasp open        # opens the script editor in a browser
 ```
 
 In the editor, run **`oneTimeSetup`** once (pick it from the function dropdown
-and press Run). Approve the permission prompt when it appears — this is the
+and press Run). Approve the permission prompt when it appears - this is the
 one-time authorisation for Calendar, Gmail, Sheets and external requests.
 
 It creates the spreadsheet, the four tabs, and a secondary calendar called
@@ -122,13 +122,13 @@ In the Google Cloud project behind the script
 (**Project Settings → Google Cloud Platform project** in the Apps Script editor):
 
 1. Configure the **OAuth consent screen** once (External, app name, support
-   email — the shared account is fine for all of them).
+   email - the shared account is fine for all of them).
 2. **Credentials → Create credentials → OAuth client ID → Web application.**
 3. Under **Authorised JavaScript origins**, add:
    - `https://edes210andbioe555.github.io`
    - `http://localhost:8080` (for local development)
 
-   Origins only — no paths, no trailing slash. This is the single most common
+   Origins only - no paths, no trailing slash. This is the single most common
    cause of a sign-in button that silently does nothing.
 4. Copy the Client ID and paste it into `SETUP_OAUTH_CLIENT_ID` at the top of
    `apps-script/Setup.js` (see step 7).
@@ -145,8 +145,8 @@ In the editor: **Deploy → New deployment → Web app**
 Copy the `/exec` URL into `APPS_SCRIPT_URL` in `frontend/js/config.js`.
 
 Sanity check: open the `/exec` URL in a browser. It should return
-`{"success":true,"data":{"service":"proto-fab-cal",...}}`. Anything else — an
-HTML login page, an error — means the deployment settings are wrong.
+`{"success":true,"data":{"service":"proto-fab-cal",...}}`. Anything else - an
+HTML login page, an error - means the deployment settings are wrong.
 
 ### 7. Configure the script and add the instructors
 
@@ -166,7 +166,7 @@ Then `clasp push`, and run **`configure`** from the editor's function dropdown.
 It applies all of it and prints the resulting configuration.
 
 Instructors can also be added later by editing the **Teachers** tab directly
-(`email`, `name`, `active` = TRUE) — the sheet is the authority, and that needs
+(`email`, `name`, `active` = TRUE) - the sheet is the authority, and that needs
 no push or redeploy. `deactivateTeacher(...)` removes access while keeping
 their history.
 
@@ -212,7 +212,7 @@ With a teacher account and a student account, from the live Pages URL:
 - [ ] Book it as a student; confirm the confirmation email **and** the Google
       Calendar invitation both arrive (check spam the first time).
 - [ ] Create a **capacity-1** session and try to book it from two accounts at
-      once — the second must be refused with "session full".
+      once - the second must be refused with "session full".
 - [ ] Cancel a booking; confirm the seat frees up and both emails arrive.
 - [ ] Cancel a whole session with a couple of bookings; confirm everyone is
       notified and every row is marked cancelled.
@@ -267,7 +267,7 @@ JavaScript origin (step 5).
 **Email quota.** The shared account is a consumer Gmail account, so custom email
 is capped at ~100 recipients per day. Google Calendar's own invitations and
 cancellations are separate and unaffected. If the cap is hit, the code logs it,
-skips the branded email, and the booking still succeeds — students still get
+skips the branded email, and the booking still succeeds - students still get
 their calendar invitation. `showConfig()` prints the remaining quota.
 
 **Capacity is never cached.** `seatsRemaining` is recomputed from the `Bookings`
@@ -280,7 +280,7 @@ still recorded and the response says the calendar was not updated. The reverse
 never happens.
 
 **Teachers share responsibility.** Any active teacher can view the roster of,
-or cancel, any session — sessions are not locked to whoever created them.
+or cancel, any session - sessions are not locked to whoever created them.
 
 **No waitlist.** Over-capacity bookings are refused with a clear message. Adding
 a waitlist later means one more tab and one more branch in `bookSlot_`.
@@ -291,7 +291,7 @@ where the teacher was sitting. Both are configurable
 (`apps-script/appsscript.json` and `frontend/js/config.js`).
 
 **Identity comes only from the token.** `Session.getActiveUser()` does not
-identify the visitor in a Web App deployed this way — it returns the account the
+identify the visitor in a Web App deployed this way - it returns the account the
 script runs as. Every caller identity in this codebase comes from the verified
 ID token, never from a session API and never from a client-supplied email field.
 
