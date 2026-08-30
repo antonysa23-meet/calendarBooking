@@ -278,6 +278,10 @@ function createMocks(options = {}) {
         return part({ weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })
           .replace(/,([^,]*)$/, ',$1');
       }
+      if (pattern === 'yyyy-MM-dd') {
+        return part({ year: 'numeric', month: '2-digit', day: '2-digit' })
+          .replace(/^(\d+)\/(\d+)\/(\d+)$/, '$3-$1-$2');
+      }
       if (pattern === 'h:mm a') return part({ hour: 'numeric', minute: '2-digit' });
       if (pattern === 'h:mm a z') {
         return part({ hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });

@@ -76,6 +76,24 @@ function scriptTimeZone_() {
   return Session.getScriptTimeZone() || 'America/Chicago';
 }
 
+/** The calendar day a moment falls on in the lab's timezone, as "yyyy-MM-dd". */
+function dayKey_(value) {
+  var d = toDate_(value);
+  return d ? Utilities.formatDate(d, scriptTimeZone_(), 'yyyy-MM-dd') : '';
+}
+
+/**
+ * Students may not release a seat on the day the session runs - by then the
+ * instructor is counting on the head count and a freed seat is too late for
+ * anyone else to take. The cutoff is midnight in the lab's timezone, not a
+ * rolling 24 hours, so "not today" means the same thing to everyone.
+ */
+function cancellationClosed_(startValue) {
+  var sessionDay = dayKey_(startValue);
+  if (!sessionDay) return false;
+  return sessionDay <= dayKey_(new Date());
+}
+
 /** e.g. "Monday, Sep 14, 2026, 2:00 PM - 3:30 PM CDT" */
 function formatRange_(startValue, endValue) {
   var tz = scriptTimeZone_();

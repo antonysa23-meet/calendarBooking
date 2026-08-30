@@ -647,6 +647,34 @@ group('cancelBooking - ownership and seat release');
     })) === 'NOT_FOUND');
 }
 
+{
+  // Seats are locked once the day of the session arrives - the instructor is
+  // already counting on the head count by then.
+  const { ctx, mocks } = boot();
+  const event = makeEvent(ctx, { capacity: 2 });
+  const booking = ctx.bookSlot_({ idToken: tok('sam@rice.edu', 'Sam'), eventId: event.eventId });
+
+  check('a booking for a later day can still be cancelled',
+    ctx.listMyBookings_({ idToken: tok('sam@rice.edu') }).upcoming[0].canCancel === true);
+
+  // Pull the session back onto today, leaving the booking untouched.
+  const row = ctx.findRecord_('Events', (r) => r.eventId === event.eventId);
+  ctx.updateRecord_('Events', row._row, { startDateTime: new Date().toISOString() });
+
+  const before = mocks._sent.length;
+  check('on the day of the session cancelling is refused',
+    codeOf(() => ctx.cancelBooking_({
+      idToken: tok('sam@rice.edu'), bookingId: booking.bookingId
+    })) === 'CANCEL_CLOSED');
+  check('the seat is still confirmed after the refusal',
+    ctx.confirmedBookingsForEvent_(event.eventId).length === 1);
+  check('and nobody was emailed about a cancellation', mocks._sent.length === before);
+  const mine = ctx.listMyBookings_({ idToken: tok('sam@rice.edu'), includeCancelled: true });
+  const listed = mine.upcoming.concat(mine.past)
+    .find((b) => b.bookingId === booking.bookingId);
+  check('listMyBookings tells the page the seat is locked', listed.canCancel === false);
+}
+
 /* ========================================================================== */
 
 group('listMyBookings - scoping to the caller');

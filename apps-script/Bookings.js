@@ -143,8 +143,21 @@ function cancelBooking_(params) {
       fail_(ERR.FORBIDDEN, 'You can only cancel your own bookings.');
     }
 
+    eventRow = findRecord_(SHEET_NAMES.EVENTS, function (row) {
+      return trimStr_(row.eventId) === trimStr_(bookingRow.eventId);
+    });
+
     alreadyCancelled =
       trimStr_(bookingRow.status).toUpperCase() === BOOKING_STATUS.CANCELLED;
+
+    // Releasing a seat closes at midnight on the day of the session. Checked
+    // here as well as in the UI, since the page may have been left open
+    // overnight.
+    if (!alreadyCancelled && eventRow && cancellationClosed_(eventRow.startDateTime)) {
+      fail_(ERR.CANCEL_CLOSED,
+        'Seats cannot be released on the day of the session. Email your instructor if ' +
+        'you can no longer make it.');
+    }
 
     if (!alreadyCancelled) {
       updateRecord_(SHEET_NAMES.BOOKINGS, bookingRow._row, {
@@ -153,9 +166,6 @@ function cancelBooking_(params) {
       });
     }
 
-    eventRow = findRecord_(SHEET_NAMES.EVENTS, function (row) {
-      return trimStr_(row.eventId) === trimStr_(bookingRow.eventId);
-    });
     if (eventRow) {
       capacity = asInt_(eventRow.capacity, 0);
       seatsRemaining = Math.max(0, capacity - confirmedBookingsForEvent_(eventRow.eventId).length);
@@ -216,6 +226,8 @@ function listMyBookings_(params) {
       status: trimStr_(row.status).toUpperCase(),
       bookedAt: toIso_(row.bookedAt),
       cancelledAt: toIso_(row.cancelledAt),
+      canCancel: trimStr_(row.status).toUpperCase() === BOOKING_STATUS.CONFIRMED &&
+                 !cancellationClosed_(eventRow.startDateTime),
       event: toEventDto_(eventRow, counts[trimStr_(eventRow.eventId)] || 0)
     };
     var start = toDate_(eventRow.startDateTime);

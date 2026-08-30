@@ -65,12 +65,24 @@
       ${past.length ? historySection(past) : ''}`;
   }
 
+  // Seats cannot be released once the session's day has arrived. The server
+  // decides (in the lab's timezone) and sends canCancel; the local date check
+  // is only a fallback for a backend that predates that field.
+  function cancellable(item) {
+    if (typeof item.canCancel === 'boolean') return item.canCancel;
+    const start = new Date(item.event.startDateTime);
+    return isNaN(start) || start.toDateString() !== new Date().toDateString();
+  }
+
   function upcomingCard(item) {
-    return UI.sessionCard(item.event, {
-      booked: true,
-      actionHtml: `<button class="btn btn-secondary btn-sm" type="button"
-        data-cancel="${UI.esc(item.bookingId)}">Cancel my seat</button>`
-    });
+    const actionHtml = cancellable(item)
+      ? `<button class="btn btn-secondary btn-sm" type="button"
+          data-cancel="${UI.esc(item.bookingId)}">Cancel my seat</button>`
+      : `<button class="btn btn-secondary btn-sm" type="button" disabled
+          title="Seats cannot be released on the day of the session. Email your instructor if you can no longer make it."
+          >Too late to cancel</button>`;
+
+    return UI.sessionCard(item.event, { booked: true, actionHtml: actionHtml });
   }
 
   function historySection(past) {
@@ -125,6 +137,11 @@
   async function cancel(bookingId, button) {
     const item = (data.upcoming || []).find((b) => b.bookingId === bookingId);
     if (!item) return;
+    if (!cancellable(item)) {
+      UI.toast('Seats cannot be released on the day of the session. Email your instructor ' +
+               'if you can no longer make it.', 'warning', 8000);
+      return;
+    }
 
     // Cancelling emails the instructor and pulls the event off the student's
     // calendar, so it always asks first.
@@ -159,6 +176,8 @@
         return;
       }
       UI.toast((e && e.message) || 'Could not cancel that booking.', 'error', 8000);
+      // The page was open across midnight: repaint so the button matches.
+      if (e && e.code === 'CANCEL_CLOSED') await load();
     }
   }
 
