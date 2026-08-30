@@ -23,6 +23,7 @@
     status: document.querySelector('#create-status'),
     course: document.querySelector('#courseId'),
     sessionType: document.querySelector('#sessionType'),
+    location: document.querySelector('#location'),
     teacher: document.querySelector('#teacherEmail'),
     date: document.querySelector('#date'),
     start: document.querySelector('#startTime'),
@@ -138,6 +139,37 @@
 
     presetDateTimes();
     initPicker();
+  }
+
+  /**
+   * Where each kind of session usually happens. Choosing a type fills the
+   * location in, so the common case is one less field to type.
+   *
+   * Types that move around - Safety Training, Equipment Orientation, Molding
+   * and Casting, Electronics, Open Lab, Other - are deliberately absent and
+   * get no default. Keys must match SESSION_TYPES in apps-script/Constants.js.
+   */
+  const DEFAULT_LOCATIONS = {
+    'Laser Cutting': 'Laser Cutting Room',
+    'Water Jet Cutting': 'Wet Lab',
+    'Plasma Cutting': 'Machine Shop',
+    'CNC Machining': 'Next to the MakerBar',
+    '3D Printing': 'MakerBar'
+  };
+
+  /** The last location this filled in, so a typed-over one is recognisable. */
+  let autofilledLocation = '';
+
+  /**
+   * Fill the location to match the chosen session type - but only while the
+   * field still holds a default. Once an instructor types their own location,
+   * switching type must not throw it away.
+   */
+  function applyDefaultLocation() {
+    const current = els.location.value.trim();
+    if (current && current !== autofilledLocation) return;
+    autofilledLocation = DEFAULT_LOCATIONS[els.sessionType.value] || '';
+    els.location.value = autofilledLocation;
   }
 
   /** Sensible defaults: tomorrow, 10:00–11:00, in the course timezone. */
@@ -506,13 +538,16 @@
       const result = await call();
       els.status.textContent = describe(result);
 
-      // The mode lives outside the form, so a reset leaves it alone - which is
-      // what we want. Anyone publishing a batch is likely publishing another;
-      // a schedule over the per-batch limit has to go out in two goes.
-      els.form.reset();
-      if (picker) picker.clear();
-      presetDateTimes();
-      applyMode(mode);
+      // Everything typed stays put. A session is rarely published alone - the
+      // next one is usually the same course, room, instructor and length - and
+      // retyping all of it every time was the slow part of the job. Clear is
+      // there for when a genuinely blank form is what you want.
+      //
+      // Bulk dates are the one exception: those dates have just gone out, so
+      // leaving them ticked invites publishing the same days twice. Clearing
+      // the picker notifies its onChange, which redraws the preview, and the
+      // finally block below relabels the submit button for the empty plan.
+      if (mode === 'bulk' && picker) picker.clear();
 
       await loadEvents({ quiet: true });
     } catch (err) {
@@ -832,6 +867,8 @@
       }
     });
 
+    els.sessionType.addEventListener('change', applyDefaultLocation);
+
     els.modeToggle.addEventListener('change', (e) => {
       if (e.target.name === 'mode') applyMode(e.target.value);
     });
@@ -867,6 +904,8 @@
       setTimeout(() => {
         if (picker) picker.clear();
         presetDateTimes();
+        autofilledLocation = '';
+        applyDefaultLocation();
         applyMode(mode);
       }, 0);
     });
