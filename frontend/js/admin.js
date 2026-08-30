@@ -157,19 +157,30 @@
     '3D Printing': 'MakerBar'
   };
 
-  /** The last location this filled in, so a typed-over one is recognisable. */
-  let autofilledLocation = '';
-
   /**
-   * Fill the location to match the chosen session type - but only while the
-   * field still holds a default. Once an instructor types their own location,
-   * switching type must not throw it away.
+   * Fill the location to match the chosen session type.
+   *
+   * A type with a fixed home always overwrites the field. This used to refuse
+   * to overwrite anything typed by hand, which sounds protective but made the
+   * feature look broken: the form keeps its values after publishing, so once
+   * any location was in the box, picking a type silently did nothing.
+   *
+   * Types with no fixed home leave the field alone rather than emptying it -
+   * an Open Lab still happens somewhere, and wiping the answer would be worse
+   * than leaving the last one in place.
    */
   function applyDefaultLocation() {
+    const next = DEFAULT_LOCATIONS[els.sessionType.value] || '';
     const current = els.location.value.trim();
-    if (current && current !== autofilledLocation) return;
-    autofilledLocation = DEFAULT_LOCATIONS[els.sessionType.value] || '';
-    els.location.value = autofilledLocation;
+    // Whether the box currently holds one of our own defaults, which is what
+    // separates "the last type put this here" from "the instructor typed it".
+    // Comparing against the values needs no bookkeeping between calls - the
+    // earlier version tracked it in a variable, and that is precisely what
+    // went stale and made the whole feature look dead.
+    const isOurs = !current || Object.values(DEFAULT_LOCATIONS).indexOf(current) !== -1;
+
+    if (next) els.location.value = next;   // a type with a home always wins
+    else if (isOurs) els.location.value = '';   // clear a stale room, keep theirs
   }
 
   /** Sensible defaults: tomorrow, 10:00–11:00, in the course timezone. */
@@ -904,7 +915,6 @@
       setTimeout(() => {
         if (picker) picker.clear();
         presetDateTimes();
-        autofilledLocation = '';
         applyDefaultLocation();
         applyMode(mode);
       }, 0);
